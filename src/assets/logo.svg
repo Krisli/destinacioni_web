@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <clipPath id="diagonal">
+      <path d="M0,64 L256,0 L256,256 L0,256 Z"/>
+    </clipPath>
+  </defs>
+  <rect width="256" height="256" rx="48" fill="#1E2A3A"/>
+  <rect width="256" height="256" rx="48" fill="#FF3B30" clip-path="url(#diagonal)" opacity="0.95"/>
+  <text x="50%" y="54%" text-anchor="middle" font-family="Poppins, Inter, system-ui" font-weight="800" font-size="120" fill="#FFFFFF">D</text>
+  <path d="M40,210 H216" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" stroke-dasharray="18 12" opacity="0.85"/>
+</svg>
