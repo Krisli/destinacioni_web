@@ -51,7 +51,12 @@ export function middleware(req: NextRequest) {
 
 export const config = { 
   matcher: [
-    '/vendor/:path*', 
+    '/vendor/dashboard/:path*',
+    '/vendor/listings/:path*',
+    '/vendor/bookings/:path*',
+    '/vendor/calendar/:path*',
+    '/vendor/analytics/:path*',
+    '/vendor/settings/:path*',
     '/admin/:path*'
   ] 
 };

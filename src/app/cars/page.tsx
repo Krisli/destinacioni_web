@@ -410,108 +410,108 @@ const CarListingsContent = () => {
       <div className="pt-20">
         {/* Search Strip */}
         <SearchStrip />
-      
-      {/* Category Bar */}
-      <CategoryBar />
-      
-      <div className="container mx-auto px-4 lg:px-6 py-8">
-        {/* Toolbar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="text-sm text-muted-foreground">
-            {t("cars.foundCars")} {cars.length} {t("cars.carsText")}
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {/* Filters Modal Button */}
-            <FiltersModal />
+        
+        {/* Category Bar */}
+        <CategoryBar />
+        
+        <div className="container mx-auto px-4 lg:px-6 py-8">
+          {/* Toolbar */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="text-sm text-muted-foreground">
+              {t("cars.foundCars")} {cars.length} {t("cars.carsText")}
+            </div>
             
-            {/* Map Toggle */}
-            <Button
-              variant={showMap ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowMap(!showMap)}
-              className="flex items-center gap-2"
-            >
-              <Map className="h-4 w-4" />
-              {!isMobile && t("showOnMap")}
-            </Button>
-            
-            {/* View Toggle */}
-            <div className="flex border border-border rounded-lg p-1">
+            <div className="flex items-center gap-3">
+              {/* Filters Modal Button */}
+              <FiltersModal />
+              
+              {/* Map Toggle */}
               <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                variant={showMap ? "default" : "outline"}
                 size="sm"
-                onClick={() => setViewMode('grid')}
-                className="h-8 w-8"
-                aria-label="Grid view"
+                onClick={() => setShowMap(!showMap)}
+                className="flex items-center gap-2"
               >
-                <Grid className="h-4 w-4" />
+                <Map className="h-4 w-4" />
+                {!isMobile && t("showOnMap")}
               </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-                className="h-8 w-8"
-                aria-label="List view"
+              
+              {/* View Toggle */}
+              <div className="flex border border-border rounded-lg p-1">
+                <Button
+                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                  className="h-8 w-8"
+                  aria-label="Grid view"
+                >
+                  <Grid className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === 'list' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                  className="h-8 w-8"
+                  aria-label="List view"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
+
+              {/* Sort */}
+              <Select 
+                value={filters.sortBy} 
+                onValueChange={(value) => dispatch({ type: 'SET_SORT_BY', payload: value })}
               >
-                <List className="h-4 w-4" />
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="recommended">{t("cars.recommended")}</SelectItem>
+                  <SelectItem value="price-low">{t("cars.priceLowHigh")}</SelectItem>
+                  <SelectItem value="price-high">{t("cars.priceHighLow")}</SelectItem>
+                  <SelectItem value="rating">{t("cars.highestRated")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Car Grid, Skeleton or Empty State */}
+          {loadingPhase === 'skeleton' ? (
+            <SkeletonGrid count={9} />
+          ) : cars.length === 0 ? (
+            <div className="py-12">
+              <EmptyState />
+            </div>
+          ) : (
+            <div 
+              className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'} transition-opacity duration-300`}
+              style={{ opacity: loadingPhase === 'idle' ? 1 : 0 }}
+            >
+              {cars.map((car) => (
+                <CarCard key={car.id} car={car} />
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {cars.length > 0 && (
+            <div className="flex justify-center items-center space-x-2 mt-12">
+              <Button variant="outline" size="sm">
+                {t("previous")}
+              </Button>
+              <Button variant="default" size="sm">1</Button>
+              <Button variant="outline" size="sm">2</Button>
+              <Button variant="outline" size="sm">3</Button>
+              <Button variant="outline" size="sm">
+                {t("next")}
               </Button>
             </div>
-
-            {/* Sort */}
-            <Select 
-              value={filters.sortBy} 
-              onValueChange={(value) => dispatch({ type: 'SET_SORT_BY', payload: value })}
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="recommended">{t("cars.recommended")}</SelectItem>
-                <SelectItem value="price-low">{t("cars.priceLowHigh")}</SelectItem>
-                <SelectItem value="price-high">{t("cars.priceHighLow")}</SelectItem>
-                <SelectItem value="rating">{t("cars.highestRated")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          )}
         </div>
-
-        {/* Car Grid, Skeleton or Empty State */}
-        {loadingPhase === 'skeleton' ? (
-          <SkeletonGrid count={9} />
-        ) : cars.length === 0 ? (
-          <div className="py-12">
-            <EmptyState />
-          </div>
-        ) : (
-          <div 
-            className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'} transition-opacity duration-300`}
-            style={{ opacity: loadingPhase === 'idle' ? 1 : 0 }}
-          >
-            {cars.map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {cars.length > 0 && (
-          <div className="flex justify-center items-center space-x-2 mt-12">
-            <Button variant="outline" size="sm">
-              {t("previous")}
-            </Button>
-            <Button variant="default" size="sm">1</Button>
-            <Button variant="outline" size="sm">2</Button>
-            <Button variant="outline" size="sm">3</Button>
-            <Button variant="outline" size="sm">
-              {t("next")}
-            </Button>
-          </div>
-        )}
-      </div>
-      
-      {/* Map Side Panel */}
-      <MapSidePanel isOpen={showMap} onClose={() => setShowMap(false)} />
+        
+        {/* Map Side Panel */}
+        <MapSidePanel isOpen={showMap} onClose={() => setShowMap(false)} />
       </div>
     </div>
   );

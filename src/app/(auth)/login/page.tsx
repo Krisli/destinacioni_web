@@ -22,7 +22,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
-  const { login } = useAuth();
+  const { login, user, isAuthenticated, refreshUser } = useAuth();
   
   // Get redirect URL from query params
   const redirectTo = searchParams.get('redirect') || '/';
@@ -32,6 +32,26 @@ export default function LoginPage() {
     // Clear any existing error when component mounts
     setError('');
   }, []);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Apply role-based redirects
+      let redirectPath = redirectTo;
+      
+      if (redirectTo === '/' || redirectTo === '/login') {
+        if (user.roles.includes('admin')) {
+          redirectPath = '/admin';
+        } else if (user.roles.includes('vendor')) {
+          redirectPath = '/vendor/dashboard';
+        } else {
+          redirectPath = '/';
+        }
+      }
+      
+      router.replace(redirectPath);
+    }
+  }, [isAuthenticated, user, redirectTo, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +74,6 @@ export default function LoginPage() {
       });
 
       // Redirect based on user role and intended destination
-      const userRole = response.user.roles[0]; // Primary role
       let redirectPath = redirectTo;
 
       // If redirecting to protected area, check permissions
@@ -69,16 +88,17 @@ export default function LoginPage() {
         if (response.user.roles.includes('admin')) {
           redirectPath = '/admin';
         } else if (response.user.roles.includes('vendor')) {
-          redirectPath = '/vendor';
+          redirectPath = '/vendor/dashboard';
         } else {
           redirectPath = '/';
         }
       }
 
-      router.push(redirectPath);
-    } catch (err: any) {
-      setError(err.message || t('loginError') || 'Login failed');
-    } finally {
+      // Redirect immediately after successful login
+      router.replace(redirectPath);
+      // Don't set loading to false here since we're redirecting
+    } catch (err: unknown) {
+      setError((err as Error).message || t('loginError') || 'Login failed');
       setLoading(false);
     }
   };

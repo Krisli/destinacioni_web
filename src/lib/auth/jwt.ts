@@ -41,49 +41,64 @@ export function isTokenExpired(token: string): boolean {
 }
 
 /**
- * Get token from localStorage
+ * Get token from cookies
  */
 export function getStoredToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('access_token');
+  
+  // More robust cookie parsing
+  const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+  const tokenCookie = cookies.find(cookie => cookie.startsWith('access_token='));
+  const token = tokenCookie ? tokenCookie.substring('access_token='.length) : null;
+  
+  return token;
 }
 
 /**
- * Store token in localStorage
+ * Store token in cookies (for middleware access)
  */
 export function setStoredToken(token: string): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem('access_token', token);
+  // Set cookie with 24 hour expiration
+  const expires = new Date();
+  expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000));
+  // Use lax samesite for better compatibility and remove secure for localhost
+  document.cookie = `access_token=${token}; expires=${expires.toUTCString()}; path=/; samesite=lax`;
 }
 
 /**
- * Remove token from localStorage
+ * Remove token from cookies
  */
 export function removeStoredToken(): void {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem('access_token');
+  document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 }
 
 /**
- * Get refresh token from localStorage
+ * Get refresh token from cookies
  */
 export function getStoredRefreshToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('refresh_token');
+  const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+  const refreshTokenCookie = cookies.find(cookie => cookie.startsWith('refresh_token='));
+  return refreshTokenCookie ? refreshTokenCookie.substring('refresh_token='.length) : null;
 }
 
 /**
- * Store refresh token in localStorage
+ * Store refresh token in cookies
  */
 export function setStoredRefreshToken(token: string): void {
   if (typeof window === 'undefined') return;
-  localStorage.setItem('refresh_token', token);
+  // Set cookie with 7 day expiration
+  const expires = new Date();
+  expires.setTime(expires.getTime() + (7 * 24 * 60 * 60 * 1000));
+  document.cookie = `refresh_token=${token}; expires=${expires.toUTCString()}; path=/; samesite=lax`;
 }
 
 /**
- * Remove refresh token from localStorage
+ * Remove refresh token from cookies
  */
 export function removeStoredRefreshToken(): void {
   if (typeof window === 'undefined') return;
-  localStorage.removeItem('refresh_token');
+  document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 }
