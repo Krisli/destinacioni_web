@@ -159,6 +159,22 @@ const translations = {
     // Header translations
     skipToContent: 'Skip to content',
     addListing: 'Add Listing',
+    // Authentication translations
+    userLogin: 'User Login',
+    vendorLogin: 'Vendor Login',
+    adminLogin: 'Admin Login',
+    userLoginDescription: 'Sign in to your account',
+    vendorLoginDescription: 'Access your vendor dashboard',
+    adminLoginDescription: 'Access the admin panel',
+    email: 'Email',
+    enterEmail: 'Enter your email',
+    password: 'Password',
+    enterPassword: 'Enter your password',
+    signingIn: 'Signing in...',
+    loginError: 'Login failed. Please check your credentials.',
+    forgotPassword: 'Forgot your password?',
+    dontHaveAccount: "Don't have an account?",
+    signUp: 'Sign up',
   },
   al: {
     home: 'Ballina',
@@ -305,6 +321,22 @@ const translations = {
     // Header translations
     skipToContent: 'Kalo në përmbajtje',
     addListing: 'Shto Listim',
+    // Authentication translations
+    userLogin: 'Hyrja e Përdoruesit',
+    vendorLogin: 'Hyrja e Furnizuesit',
+    adminLogin: 'Hyrja e Administratorit',
+    userLoginDescription: 'Hyni në llogarinë tuaj',
+    vendorLoginDescription: 'Qasuni në panelin e furnizuesit',
+    adminLoginDescription: 'Qasuni në panelin e administratorit',
+    email: 'Email',
+    enterEmail: 'Shkruani email-in tuaj',
+    password: 'Fjalëkalimi',
+    enterPassword: 'Shkruani fjalëkalimin tuaj',
+    signingIn: 'Duke u futur...',
+    loginError: 'Hyrja dështoi. Ju lutemi kontrolloni kredencialet tuaja.',
+    forgotPassword: 'Keni harruar fjalëkalimin?',
+    dontHaveAccount: 'Nuk keni llogari?',
+    signUp: 'Regjistrohuni',
   },
 }
 
