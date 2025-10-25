@@ -52,7 +52,8 @@ export function middleware(req: NextRequest) {
 export const config = { 
   matcher: [
     '/vendor/dashboard/:path*',
-    '/vendor/listings/:path*',
+    '/vendor/cars/:path*',
+    '/vendor/apartments/:path*',
     '/vendor/bookings/:path*',
     '/vendor/calendar/:path*',
     '/vendor/analytics/:path*',

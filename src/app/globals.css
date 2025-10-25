@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+/* FullCalendar CSS - Using CDN for better compatibility */
+
 /* Destinacioni.com Design System - Working Version */
 
 :root {
@@ -28,6 +30,8 @@
   --warning-foreground: #0f172a;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
 }
 
 .dark {
@@ -55,6 +59,8 @@
   --warning-foreground: #0f172a;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
 }
 
 /* Base styles */
@@ -220,4 +226,12 @@ body {
 
 .border-border {
   border-color: var(--border);
+}
+
+.bg-popover {
+  background-color: var(--popover);
+}
+
+.text-popover-foreground {
+  color: var(--popover-foreground);
 }
