@@ -1,30 +1,40 @@
 /**
- * API utilities for authentication with .NET backend
+ * Authentication API for .NET Backend
  * 
- * MOCKING: Set MOCK_AUTH=true in environment to use mock authentication
- * Remove mock imports and logic when backend is ready
+ * All authentication endpoints call .NET API directly.
  */
 
-// Mock imports - REMOVE WHEN BACKEND IS READY
-import {
-  mockLogin,
-  mockRefreshToken,
-  mockGetCurrentUser,
-  mockLogout,
-  mockRegister,
-  mockRequestPasswordReset,
-  mockResetPassword,
-} from './mock';
+import { api, ApiError } from '@/lib/api/client';
+import { decodeJWT, getStoredToken as getTokenFromStorage } from './jwt';
 
+// Request/Response interfaces matching .NET API
 export interface LoginRequest {
   email: string;
   password: string;
 }
 
 export interface LoginResponse {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
+  jwtToken: string;
+  refreshToken: string;
+  refreshTokenExpiryDate: string; // ISO 8601 date string
+}
+
+export interface RefreshTokenRequest {
+  jwtToken: string;
+  refreshToken: string;
+}
+
+export interface RefreshTokenResponse {
+  jwtToken: string;
+  refreshToken: string;
+  refreshTokenExpiryDate: string; // ISO 8601 date string
+}
+
+// Normalized response with user data extracted from JWT
+export interface NormalizedLoginResponse {
+  jwtToken: string;
+  refreshToken: string;
+  refreshTokenExpiryDate: string;
   user: {
     id: string;
     email: string;
@@ -43,149 +53,96 @@ export interface User {
   company?: string; // For vendors
 }
 
-export interface RefreshTokenRequest {
-  refresh_token: string;
-}
-
-export interface RefreshTokenResponse {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-}
-
-// Base API URL - should be in environment variables
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.destinacioni.com';
-
-// Mock flag - REMOVE WHEN BACKEND IS READY
-const USE_MOCK_AUTH = process.env.NEXT_PUBLIC_MOCK_AUTH === 'true' || process.env.NODE_ENV === 'development';
-
-/**
- * Make authenticated API request
- */
-async function apiRequest<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  
-  const response = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Network error' }));
-    throw new Error(error.message || `HTTP ${response.status}`);
-  }
-
-  return response.json();
-}
+// Re-export ApiError for convenience
+export { ApiError };
 
 /**
  * Login user
+ * Returns normalized response with user data extracted from JWT
  */
-export async function login(credentials: LoginRequest): Promise<LoginResponse> {
-  // MOCK: Use mock when enabled - REMOVE WHEN BACKEND IS READY
-  if (USE_MOCK_AUTH) {
-    return mockLogin(credentials);
+export async function login(credentials: LoginRequest): Promise<NormalizedLoginResponse> {
+  try {
+    const response = await api.post<LoginResponse>('/auth/login', credentials, {
+      skipAuth: true, // Login endpoint doesn't require auth
+    });
+    
+    // Extract user data from JWT token
+    const payload = decodeJWT(response.jwtToken);
+    if (!payload) {
+      throw new Error('Failed to decode JWT token');
+    }
+    
+    // Build normalized response
+    return {
+      jwtToken: response.jwtToken,
+      refreshToken: response.refreshToken,
+      refreshTokenExpiryDate: response.refreshTokenExpiryDate,
+      user: {
+        id: payload.sub,
+        email: payload.email,
+        name: payload.name || payload.email.split('@')[0], // Fallback to email username if no name
+        roles: payload.roles || [],
+      },
+    };
+  } catch (error) {
+    // Enhance error messages for login failures
+    if (error instanceof ApiError) {
+      if (error.status === 401) {
+        throw new Error('Invalid email or password');
+      }
+      if (error.status === 403) {
+        throw new Error('Account is disabled or not verified');
+      }
+      if (error.status >= 500) {
+        throw new Error('Server error. Please try again later');
+      }
+    }
+    throw error;
   }
-  
-  return apiRequest<LoginResponse>('/auth/login', {
-    method: 'POST',
-    body: JSON.stringify(credentials),
-  });
 }
 
 /**
  * Refresh access token
+ * @param jwtToken - Current JWT token
+ * @param refreshTokenValue - Refresh token
  */
-export async function refreshToken(refreshToken: string): Promise<RefreshTokenResponse> {
-  // MOCK: Use mock when enabled - REMOVE WHEN BACKEND IS READY
-  if (USE_MOCK_AUTH) {
-    return mockRefreshToken(refreshToken);
-  }
-  
-  return apiRequest<RefreshTokenResponse>('/auth/refresh', {
-    method: 'POST',
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  });
+export async function refreshToken(
+  jwtToken: string,
+  refreshTokenValue: string
+): Promise<RefreshTokenResponse> {
+  return api.post<RefreshTokenResponse>(
+    '/auth/refresh',
+    { 
+      jwtToken,
+      refreshToken: refreshTokenValue,
+    },
+    {
+      skipAuth: true, // Refresh endpoint uses refresh token in body, not auth header
+    }
+  );
 }
 
 /**
  * Get current user data
+ * Extracts user data from stored JWT token (no API call needed)
  */
 export async function getCurrentUser(): Promise<User> {
-  // MOCK: Use mock when enabled - REMOVE WHEN BACKEND IS READY
-  if (USE_MOCK_AUTH) {
-    return mockGetCurrentUser();
+  // Extract user data from stored JWT token
+  const token = getTokenFromStorage();
+  if (!token) {
+    throw new Error('Not authenticated');
   }
   
-  return apiRequest<User>('/auth/me');
-}
-
-/**
- * Logout user
- */
-export async function logout(): Promise<void> {
-  // MOCK: Use mock when enabled - REMOVE WHEN BACKEND IS READY
-  if (USE_MOCK_AUTH) {
-    return mockLogout();
+  const payload = decodeJWT(token);
+  if (!payload) {
+    throw new Error('Invalid token');
   }
   
-  return apiRequest<void>('/auth/logout', {
-    method: 'POST',
-  });
-}
-
-/**
- * Register new user
- */
-export async function register(userData: {
-  email: string;
-  password: string;
-  name: string;
-  role: 'user' | 'vendor';
-}): Promise<LoginResponse> {
-  // MOCK: Use mock when enabled - REMOVE WHEN BACKEND IS READY
-  if (USE_MOCK_AUTH) {
-    return mockRegister(userData);
-  }
-  
-  return apiRequest<LoginResponse>('/auth/register', {
-    method: 'POST',
-    body: JSON.stringify(userData),
-  });
-}
-
-/**
- * Request password reset
- */
-export async function requestPasswordReset(email: string): Promise<void> {
-  // MOCK: Use mock when enabled - REMOVE WHEN BACKEND IS READY
-  if (USE_MOCK_AUTH) {
-    return mockRequestPasswordReset(email);
-  }
-  
-  return apiRequest<void>('/auth/forgot-password', {
-    method: 'POST',
-    body: JSON.stringify({ email }),
-  });
-}
-
-/**
- * Reset password
- */
-export async function resetPassword(token: string, newPassword: string): Promise<void> {
-  // MOCK: Use mock when enabled - REMOVE WHEN BACKEND IS READY
-  if (USE_MOCK_AUTH) {
-    return mockResetPassword(token, newPassword);
-  }
-  
-  return apiRequest<void>('/auth/reset-password', {
-    method: 'POST',
-    body: JSON.stringify({ token, password: newPassword }),
-  });
+  return {
+    id: payload.sub,
+    email: payload.email,
+    name: payload.name || payload.email.split('@')[0],
+    roles: payload.roles || [],
+    phone: payload.phone,
+  };
 }

@@ -4,12 +4,27 @@
  * Actual JWT validation happens on the backend
  */
 
+// .NET JWT uses XML schema claims with full URIs
+interface NetJWTClaims {
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier': string; // User ID
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress': string; // Email
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'?: string; // First name
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'?: string; // Last name
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'?: string; // Phone
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role'?: string | string[]; // Roles
+  exp: number; // Expiration timestamp
+  iat?: number; // Issued at
+}
+
+// Simplified interface for our app
 export interface JWTPayload {
   sub: string;           // User ID
   email: string;
-  roles: string[];       // ['user', 'vendor', 'admin']
-  iat: number;           // Issued at
-  exp: number;           // Expires at
+  name?: string;         // Full name (first + last)
+  roles: string[];      // ['user', 'vendor', 'admin']
+  phone?: string;       // Mobile phone
+  iat?: number;         // Issued at
+  exp: number;          // Expires at
 }
 
 /**
@@ -21,8 +36,34 @@ export function decodeJWT(token: string): JWTPayload | null {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
     
-    const payload = JSON.parse(atob(parts[1]));
-    return payload as JWTPayload;
+    const rawPayload = JSON.parse(atob(parts[1])) as NetJWTClaims;
+    
+    // Convert .NET claims structure to our simplified format
+    const idClaim = rawPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+    const emailClaim = rawPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'];
+    const nameClaim = rawPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+    const surnameClaim = rawPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'];
+    const phoneClaim = rawPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'];
+    const roleClaim = rawPayload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role'];
+    
+    // Handle roles - can be string or array
+    let roles: string[] = [];
+    if (roleClaim) {
+      roles = Array.isArray(roleClaim) ? roleClaim : [roleClaim];
+    }
+    
+    // Combine first name and surname
+    const fullName = [nameClaim, surnameClaim].filter(Boolean).join(' ') || undefined;
+    
+    return {
+      sub: idClaim,
+      email: emailClaim,
+      name: fullName,
+      roles,
+      phone: phoneClaim,
+      iat: rawPayload.iat,
+      exp: rawPayload.exp,
+    };
   } catch (error) {
     console.error('JWT decode error:', error);
     return null;
@@ -46,12 +87,9 @@ export function isTokenExpired(token: string): boolean {
 export function getStoredToken(): string | null {
   if (typeof window === 'undefined') return null;
   
-  // More robust cookie parsing
   const cookies = document.cookie.split(';').map(cookie => cookie.trim());
-  const tokenCookie = cookies.find(cookie => cookie.startsWith('access_token='));
-  const token = tokenCookie ? tokenCookie.substring('access_token='.length) : null;
-  
-  return token;
+  const tokenCookie = cookies.find(cookie => cookie.startsWith('jwt_token='));
+  return tokenCookie ? tokenCookie.substring('jwt_token='.length) : null;
 }
 
 /**
@@ -62,8 +100,7 @@ export function setStoredToken(token: string): void {
   // Set cookie with 24 hour expiration
   const expires = new Date();
   expires.setTime(expires.getTime() + (24 * 60 * 60 * 1000));
-  // Use lax samesite for better compatibility and remove secure for localhost
-  document.cookie = `access_token=${token}; expires=${expires.toUTCString()}; path=/; samesite=lax`;
+  document.cookie = `jwt_token=${token}; expires=${expires.toUTCString()}; path=/; samesite=lax`;
 }
 
 /**
@@ -71,7 +108,7 @@ export function setStoredToken(token: string): void {
  */
 export function removeStoredToken(): void {
   if (typeof window === 'undefined') return;
-  document.cookie = 'access_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  document.cookie = 'jwt_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 }
 
 /**

@@ -62,15 +62,15 @@ export default function LoginPage() {
       const credentials: LoginRequest = { email, password };
       const response = await apiLogin(credentials);
       
-      // Store tokens
-      setStoredToken(response.access_token);
-      setStoredRefreshToken(response.refresh_token);
+      // Store tokens (using jwtToken and refreshToken from .NET API)
+      setStoredToken(response.jwtToken);
+      setStoredRefreshToken(response.refreshToken);
       
       // Update auth context
       login({
         ...response.user,
         isAuthenticated: true,
-        token: response.access_token,
+        token: response.jwtToken,
       });
 
       // Redirect based on user role and intended destination

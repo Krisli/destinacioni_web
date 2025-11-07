@@ -16,8 +16,7 @@ import {
 } from './jwt';
 import { 
   getCurrentUser, 
-  refreshToken, 
-  logout as apiLogout,
+  refreshToken,
   type User 
 } from './api';
 
@@ -46,16 +45,25 @@ export async function getUser(): Promise<AuthUser | null> {
       const refreshTokenValue = getStoredRefreshToken();
       if (refreshTokenValue) {
         try {
-          const refreshResponse = await refreshToken(refreshTokenValue);
-          setStoredToken(refreshResponse.access_token);
-          setStoredRefreshToken(refreshResponse.refresh_token);
+          const refreshResponse = await refreshToken(token, refreshTokenValue);
+          setStoredToken(refreshResponse.jwtToken);
+          setStoredRefreshToken(refreshResponse.refreshToken);
           
-          // Get user data with new token
-          const user = await getCurrentUser();
+          // Extract user from new JWT token
+          const payload = decodeJWT(refreshResponse.jwtToken);
+          if (!payload) {
+            clearAuthData();
+            return null;
+          }
+          
           return {
-            ...user,
+            id: payload.sub,
+            email: payload.email,
+            name: payload.name || payload.email.split('@')[0],
+            roles: payload.roles || [],
+            phone: payload.phone,
             isAuthenticated: true,
-            token: refreshResponse.access_token,
+            token: refreshResponse.jwtToken,
           };
         } catch (error) {
           // Refresh failed, clear tokens
@@ -69,10 +77,19 @@ export async function getUser(): Promise<AuthUser | null> {
       }
     }
 
-    // Token is valid, get user data
-    const user = await getCurrentUser();
+    // Token is valid, extract user data from JWT (no API call needed)
+    const payload = decodeJWT(token);
+    if (!payload) {
+      clearAuthData();
+      return null;
+    }
+    
     return {
-      ...user,
+      id: payload.sub,
+      email: payload.email,
+      name: payload.name || payload.email.split('@')[0],
+      roles: payload.roles || [],
+      phone: payload.phone,
       isAuthenticated: true,
       token,
     };
@@ -102,8 +119,9 @@ export function getUserSync(): AuthUser | null {
   return {
     id: payload.sub,
     email: payload.email,
-    name: payload.email.split('@')[0], // Fallback name
-    roles: payload.roles,
+    name: payload.name || payload.email.split('@')[0], // Use name from JWT or fallback
+    roles: payload.roles || [],
+    phone: payload.phone,
     isAuthenticated: true,
     token,
   };
@@ -156,15 +174,10 @@ export function clearAuthData(): void {
 
 /**
  * Logout user
+ * Clears local tokens (no API call needed)
  */
 export async function logout(): Promise<void> {
-  try {
-    await apiLogout();
-  } catch (error) {
-    console.error('Logout API error:', error);
-  } finally {
-    clearAuthData();
-  }
+  clearAuthData();
 }
 
 /**

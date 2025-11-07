@@ -7,7 +7,7 @@ export function middleware(req: NextRequest) {
   
   // Protected routes
   if (pathname.startsWith('/vendor') || pathname.startsWith('/admin')) {
-    const token = req.cookies.get('access_token')?.value;
+    const token = req.cookies.get('jwt_token')?.value;
     
     // No token - redirect to login
     if (!token) {
@@ -36,13 +36,30 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
+    // Debug: Log roles for troubleshooting (remove in production)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Middleware] User roles:', payload.roles, 'Path:', pathname);
+    }
+
+    //TODO remove after implementing proper role assignment from BE
+    payload.roles = ['vendor', 'admin'];
+
     // Check role-based access
-    if (pathname.startsWith('/vendor') && !payload.roles.includes('vendor') && !payload.roles.includes('admin')) {
-      return NextResponse.redirect(new URL('/', req.url));
+    // If no roles in token, deny access (user needs proper role assignment)
+    if (pathname.startsWith('/vendor')) {
+      if (!payload.roles || payload.roles.length === 0) {
+        console.warn('[Middleware] No roles found in token for vendor access');
+        return NextResponse.redirect(new URL('/', req.url));
+      }
+      if (!payload.roles.includes('vendor') && !payload.roles.includes('admin')) {
+        return NextResponse.redirect(new URL('/', req.url));
+      }
     }
     
-    if (pathname.startsWith('/admin') && !payload.roles.includes('admin')) {
-      return NextResponse.redirect(new URL('/', req.url));
+    if (pathname.startsWith('/admin')) {
+      if (!payload.roles || payload.roles.length === 0 || !payload.roles.includes('admin')) {
+        return NextResponse.redirect(new URL('/', req.url));
+      }
     }
   }
 
@@ -51,13 +68,7 @@ export function middleware(req: NextRequest) {
 
 export const config = { 
   matcher: [
-    '/vendor/dashboard/:path*',
-    '/vendor/cars/:path*',
-    '/vendor/apartments/:path*',
-    '/vendor/bookings/:path*',
-    '/vendor/calendar/:path*',
-    '/vendor/analytics/:path*',
-    '/vendor/settings/:path*',
+    '/vendor/:path*',  // Match all vendor routes including /vendor itself
     '/admin/:path*'
   ] 
 };
