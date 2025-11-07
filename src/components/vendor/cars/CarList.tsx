@@ -1,20 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { 
   Grid, 
   List, 
-  Filter, 
   Search, 
   Car,
   Plus,
   CalendarDays
 } from "lucide-react";
-
-// Mock car images - replace with actual imports when available
-const vwGolfImage = "/images/cars/vw-golf.jpg";
-const bmwSedanImage = "/images/cars/bmw-sedan.jpg";
-const toyotaHatchbackImage = "/images/cars/toyota-hatchback.jpg";
-const mercedesSedanImage = "/images/cars/mercedes-sedan.jpg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { CarListView } from "./CarListView";
 import { CarGridView } from "./CarGridView";
 import { CarCalendarView } from "./CarCalendarView";
+import { getCars, CarResponse } from "@/lib/api/cars";
 
 interface Booking {
   id: string;
@@ -40,7 +34,7 @@ interface Booking {
 }
 
 interface Car {
-  id: number;
+  id: string; // Changed from number to string to match API
   photo: string;
   make: string;
   model: string;
@@ -51,7 +45,7 @@ interface Car {
   price: number;
   status: 'active' | 'draft' | 'inactive';
   lastUpdate: string;
-  bookings: Booking[]; // Array of bookings for this car
+  bookings: Booking[]; // Array of bookings for this car (not in API yet)
 }
 
 interface CalendarDay {
@@ -65,142 +59,48 @@ export const CarList = () => {
   const { t } = useLanguage();
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'table' | 'cards' | 'calendar'>('table');
-  const [selectedCars, setSelectedCars] = useState<number[]>([]);
+  const [selectedCars, setSelectedCars] = useState<string[]>([]); // Changed from number[] to string[]
   const [searchTerm, setSearchTerm] = useState("");
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data with bookings array for each car
-  const cars: Car[] = [
-    {
-      id: 1,
-      photo: vwGolfImage,
-      make: "Volkswagen",
-      model: "Golf",
-      year: 2020,
-      transmission: "Manual",
-      fuel: "Petrol",
-      seats: 5,
-      price: 45,
-      status: 'active',
-      lastUpdate: "2 days ago",
-      bookings: [
-        {
-          id: '1',
-          startDate: '2024-01-15',
-          endDate: '2024-01-18',
-          customerName: 'John Doe',
-          customerEmail: 'john.doe@email.com',
-          status: 'confirmed',
-          totalPrice: 180,
-          notes: 'Airport pickup requested'
-        },
-        {
-          id: '2',
-          startDate: '2024-01-28',
-          endDate: '2024-02-02',
-          customerName: 'Mike Johnson',
-          customerEmail: 'mike.johnson@email.com',
-          status: 'pending',
-          totalPrice: 225,
-          notes: 'Extended weekend rental'
-        }
-      ]
-    },
-    {
-      id: 2,
-      photo: bmwSedanImage,
-      make: "BMW",
-      model: "320i",
-      year: 2021,
-      transmission: "Automatic",
-      fuel: "Petrol",
-      seats: 5,
-      price: 85,
-      status: 'active',
-      lastUpdate: "1 week ago",
-      bookings: [
-        {
-          id: '3',
-          startDate: '2024-01-20',
-          endDate: '2024-01-25',
-          customerName: 'Jane Smith',
-          customerEmail: 'jane.smith@email.com',
-          status: 'confirmed',
-          totalPrice: 425,
-          notes: 'Business trip'
-        },
-        {
-          id: '4',
-          startDate: '2024-02-10',
-          endDate: '2024-02-15',
-          customerName: 'Alex Brown',
-          customerEmail: 'alex.brown@email.com',
-          status: 'confirmed',
-          totalPrice: 425,
-          notes: 'Valentine\'s weekend'
-        }
-      ]
-    },
-    {
-      id: 3,
-      photo: toyotaHatchbackImage,
-      make: "Toyota",
-      model: "Yaris",
-      year: 2019,
-      transmission: "Manual",
-      fuel: "Hybrid",
-      seats: 5,
-      price: 35,
-      status: 'draft',
-      lastUpdate: "3 days ago",
-      bookings: [
-        {
-          id: '5',
-          startDate: '2024-01-12',
-          endDate: '2024-01-14',
-          customerName: 'Emma Davis',
-          customerEmail: 'emma.davis@email.com',
-          status: 'cancelled',
-          totalPrice: 70,
-          notes: 'Customer cancelled due to weather'
-        }
-      ]
-    },
-    {
-      id: 4,
-      photo: mercedesSedanImage,
-      make: "Mercedes",
-      model: "C-Class",
-      year: 2022,
-      transmission: "Automatic",
-      fuel: "Petrol",
-      seats: 5,
-      price: 120,
-      status: 'active',
-      lastUpdate: "5 days ago",
-      bookings: [
-        {
-          id: '6',
-          startDate: '2024-01-10',
-          endDate: '2024-01-12',
-          customerName: 'Sarah Wilson',
-          customerEmail: 'sarah.wilson@email.com',
-          status: 'confirmed',
-          totalPrice: 240,
-          notes: 'Luxury weekend getaway'
-        },
-        {
-          id: '7',
-          startDate: '2024-02-20',
-          endDate: '2024-02-25',
-          customerName: 'David Lee',
-          customerEmail: 'david.lee@email.com',
-          status: 'pending',
-          totalPrice: 600,
-          notes: 'Corporate event transportation'
-        }
-      ]
-    },
-  ];
+  // Fetch cars from API
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const carResponses = await getCars();
+        
+        // Map API response to component's Car interface
+        const mappedCars: Car[] = carResponses.map((carResponse: CarResponse) => ({
+          id: carResponse.id,
+          photo: "", // Photo not in API response yet
+          make: carResponse.makeName,
+          model: carResponse.model,
+          year: carResponse.year,
+          transmission: carResponse.transmission,
+          fuel: carResponse.fuelType,
+          seats: carResponse.seats,
+          price: 0, // Price not in API response yet
+          status: 'active' as const, // Default to active since not in API
+          lastUpdate: "", // Last update not in API response yet
+          bookings: [], // Bookings not in API response yet
+        }));
+        
+        setCars(mappedCars);
+      } catch (err) {
+        console.error('Error fetching cars:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load cars. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -210,7 +110,7 @@ export const CarList = () => {
     }
   };
 
-  const handleSelectCar = (carId: number, checked: boolean) => {
+  const handleSelectCar = (carId: string, checked: boolean) => {
     if (checked) {
       setSelectedCars([...selectedCars, carId]);
     } else {
@@ -350,8 +250,31 @@ export const CarList = () => {
             <CarCalendarView cars={cars} />
           )}
 
+      {/* Loading State */}
+      {loading && (
+        <Card>
+          <CardContent className="p-12 text-center">
+            <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading cars...</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <Card className="border-destructive">
+          <CardContent className="p-12 text-center">
+            <h3 className="text-xl font-semibold mb-2 text-destructive">Error loading cars</h3>
+            <p className="text-muted-foreground mb-6">{error}</p>
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Empty State */}
-      {cars.length === 0 && (
+      {!loading && !error && cars.length === 0 && (
         <Card className="border-dashed border-2">
           <CardContent className="p-12 text-center">
             <Car className="h-16 w-16 mx-auto text-muted-foreground mb-4" />

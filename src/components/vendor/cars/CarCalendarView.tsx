@@ -21,7 +21,7 @@ interface Booking {
 }
 
 interface Car {
-  id: number;
+  id: string;
   photo: string;
   make: string;
   model: string;

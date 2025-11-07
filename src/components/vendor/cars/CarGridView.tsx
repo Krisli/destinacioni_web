@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useLanguage } from "@/shared/components/LanguageProvider";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface Booking {
   id: string;
@@ -31,7 +32,7 @@ interface Booking {
 }
 
 interface Car {
-  id: number;
+  id: string;
   photo: string;
   make: string;
   model: string;
@@ -47,13 +48,43 @@ interface Car {
 
 interface CarGridViewProps {
   cars: Car[];
-  selectedCars: number[];
-  onSelectCar: (carId: number, checked: boolean) => void;
+  selectedCars: string[];
+  onSelectCar: (carId: string, checked: boolean) => void;
 }
 
 export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProps) => {
   const { t } = useLanguage();
   const router = useRouter();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [carToDelete, setCarToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteClick = (carId: string) => {
+    setCarToDelete(carId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!carToDelete) return;
+    
+    try {
+      setIsDeleting(true);
+      const { deleteCar } = await import('@/lib/api/cars');
+      await deleteCar(carToDelete);
+      // Refresh the page to update the car list
+      window.location.reload();
+    } catch (error) {
+      console.error('Error deleting car:', error);
+      alert(error instanceof Error ? error.message : 'Failed to delete car. Please try again.');
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setCarToDelete(null);
+    }
+  };
+
+  const handleEditClick = (carId: string) => {
+    router.push(`/vendor/cars/${carId}`);
+  };
 
   const getStatusBadge = (status: Car['status']) => {
     switch (status) {
@@ -98,7 +129,7 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleEditClick(car.id)}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </DropdownMenuItem>
@@ -114,7 +145,10 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
                 <Copy className="h-4 w-4 mr-2" />
                 Duplicate
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem 
+                className="text-red-600"
+                onClick={() => handleDeleteClick(car.id)}
+              >
                 <Trash className="h-4 w-4 mr-2" />
                 Delete
               </DropdownMenuItem>
@@ -137,10 +171,33 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
   );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      {cars.map((car) => (
-        <CarCard key={car.id} car={car} />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {cars.map((car) => (
+          <CarCard key={car.id} car={car} />
+        ))}
+      </div>
+      
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Car</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this car? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
