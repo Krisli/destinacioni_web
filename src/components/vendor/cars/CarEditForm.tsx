@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SearchableCarMakeSelect } from './SearchableCarMakeSelect';
 import { ArrowLeft, Car, Save } from 'lucide-react';
 import { useLanguage } from '@/shared/components/LanguageProvider';
-import { getCarById, updateCar, getCarMakes, CarResponse, CarMake, CreateCarRequest } from '@/lib/api/cars';
+import { getCarById, updateCar, getCarMakes, CarMake, CreateCarRequest } from '@/lib/api/cars';
 
 interface EditCarFormProps {
   carId: string;
@@ -84,7 +84,7 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
     fetchData();
   }, [carId]);
 
-  const updateField = (field: keyof CreateCarRequest, value: any) => {
+      const updateField = (field: keyof CreateCarRequest, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

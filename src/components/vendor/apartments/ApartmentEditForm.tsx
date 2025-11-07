@@ -8,18 +8,17 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Home, Upload, Save, Wifi, Car, Coffee, Utensils } from 'lucide-react';
+import { ArrowLeft, Home, Save, Wifi, Car, Coffee, Utensils } from 'lucide-react';
 import Link from 'next/link';
-import { useLanguage } from '@/shared/components/LanguageProvider';
 
 interface EditApartmentFormProps {
   apartmentId: string;
 }
 
 export const ApartmentEditForm = ({ apartmentId }: EditApartmentFormProps) => {
-  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
-  const [apartment, setApartment] = useState(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [apartment, setApartment] = useState<any>(null);
 
   useEffect(() => {
     // TODO: Fetch apartment data by ID

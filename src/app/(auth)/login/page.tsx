@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { login as apiLogin, type LoginRequest } from '@/lib/auth/api';
 import { setStoredToken, setStoredRefreshToken } from '@/lib/auth/jwt';
 
-export default function LoginPage() {
+function LoginPageContent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +22,7 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLanguage();
-  const { login, user, isAuthenticated, refreshUser } = useAuth();
+  const { login, user, isAuthenticated } = useAuth();
   
   // Get redirect URL from query params
   const redirectTo = searchParams.get('redirect') || '/';
@@ -229,5 +229,24 @@ export default function LoginPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Card className="shadow-2xl">
+            <CardContent className="p-12 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-muted-foreground">Loading...</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
   );
 }

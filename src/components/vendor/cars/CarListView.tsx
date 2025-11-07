@@ -2,17 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   MoreHorizontal, 
   Edit, 
   Calendar, 
   Eye,
   Car,
-  Plus,
   Trash
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/card";
+import { Card } from "@/shared/components/card";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -132,10 +132,12 @@ export const CarListView = ({ cars, selectedCars, onSelectAll, onSelectCar }: Ca
               </TableCell>
               <TableCell>
                 <div className="flex items-center space-x-3">
-                  <img 
+                  <Image 
                     src={car.photo} 
                     alt={`${car.make} ${car.model}`}
-                    className="w-12 h-9 object-cover rounded"
+                    width={48}
+                    height={36}
+                    className="object-cover rounded"
                   />
                   <div>
                     <div className="font-medium">

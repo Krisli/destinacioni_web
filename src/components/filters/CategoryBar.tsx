@@ -8,7 +8,7 @@ export const CategoryBar = () => {
   const { t } = useLanguage();
 
   const categories = [
-    { id: 'cars', label: t('cars'), icon: Car, active: true },
+    { id: 'cars', label: t('carsTitle'), icon: Car, active: true },
     { id: 'apartments', label: t('apartments'), icon: Home, active: false },
     { id: 'flights', label: 'Flights', icon: Plane, active: false },
     { id: 'destinations', label: t('popularDestinations'), icon: MapPin, active: false },

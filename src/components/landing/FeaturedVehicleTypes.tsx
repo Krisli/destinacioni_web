@@ -1,8 +1,7 @@
 'use client'
 
-import { Car, Truck, Shield, Zap, Crown, Fuel } from "lucide-react";
+import { Car, Truck, Zap, Crown } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/shared/components/LanguageProvider";
 
 const vehicleTypes = [

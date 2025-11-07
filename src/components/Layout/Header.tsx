@@ -2,14 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Menu, X, User, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/shared/components/LanguageProvider';
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const router = useRouter();
   const { language, setLanguage, t } = useLanguage();
 
   const toggleLanguage = () => {
@@ -18,7 +16,7 @@ export const Header = () => {
 
   const navigation = [
     { name: t('home'), href: '/' },
-    { name: t('cars'), href: '/cars' },
+    { name: t('carsTitle'), href: '/cars' },
     { name: t('apartments'), href: '/apartments' },
     { name: t('contact'), href: '/contact' },
   ];

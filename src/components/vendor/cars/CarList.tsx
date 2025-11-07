@@ -11,12 +11,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/card";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Card, CardContent } from "@/shared/components/card";
 import { useLanguage } from "@/shared/components/LanguageProvider";
-import { cn } from "@/lib/utils";
 import { CarListView } from "./CarListView";
 import { CarGridView } from "./CarGridView";
 import { CarCalendarView } from "./CarCalendarView";
@@ -47,13 +43,6 @@ interface Car {
   lastUpdate: string;
   bookings: Booking[]; // Array of bookings for this car (not in API yet)
 }
-
-interface CalendarDay {
-  date: Date;
-  isBooked: boolean;
-  booking?: Booking;
-}
-
 
 export const CarList = () => {
   const { t } = useLanguage();

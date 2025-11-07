@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/card";
+import { useLanguage } from "@/shared/components/LanguageProvider";
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -39,7 +40,15 @@ interface CarCalendarViewProps {
   cars: Car[];
 }
 
+type CalendarEvent = {
+  extendedProps: Record<string, unknown>;
+  title: string;
+  start: Date | null;
+  end: Date | null;
+};
+
 export const CarCalendarView = ({ cars }: CarCalendarViewProps) => {
+  const { t } = useLanguage();
   const calendarRef = useRef<FullCalendar>(null);
   const [viewMode, setViewMode] = useState<'dayGridMonth' | 'timeGridWeek' | 'listWeek'>('dayGridMonth');
 
@@ -76,7 +85,7 @@ export const CarCalendarView = ({ cars }: CarCalendarViewProps) => {
     })
   );
 
-  const handleEventClick = (info: { event: any }) => {
+  const handleEventClick = (info: { event: CalendarEvent }) => {
     const event = info.event;
     const extendedProps = event.extendedProps;
     
@@ -98,10 +107,10 @@ export const CarCalendarView = ({ cars }: CarCalendarViewProps) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <CalendarDays className="h-5 w-5" />
-          Car Availability Calendar
+          {t('vendor.carAvailabilityCalendar')}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          View and manage car availability with professional calendar interface
+          {t('vendor.viewManageAvailability')}
         </p>
         
         {/* View Mode Toggle */}
@@ -111,21 +120,21 @@ export const CarCalendarView = ({ cars }: CarCalendarViewProps) => {
             size="sm"
             onClick={() => setViewMode('dayGridMonth')}
           >
-            Month
+            {t('vendor.month')}
           </Button>
           <Button
             variant={viewMode === 'timeGridWeek' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('timeGridWeek')}
           >
-            Week
+            {t('vendor.week')}
           </Button>
           <Button
             variant={viewMode === 'listWeek' ? 'default' : 'outline'}
             size="sm"
             onClick={() => setViewMode('listWeek')}
           >
-            List
+            {t('vendor.list')}
           </Button>
         </div>
       </CardHeader>
@@ -152,16 +161,16 @@ export const CarCalendarView = ({ cars }: CarCalendarViewProps) => {
             // Custom styling
             themeSystem="standard"
             buttonText={{
-              today: 'Today',
-              month: 'Month',
-              week: 'Week',
-              day: 'Day',
-              list: 'List'
+              today: t('vendor.today'),
+              month: t('vendor.month'),
+              week: t('vendor.week'),
+              day: t('vendor.day'),
+              list: t('vendor.list')
             }}
             // Responsive options
             aspectRatio={1.8}
             // Event rendering
-            eventDidMount={(info: { event: any; el: HTMLElement }) => {
+            eventDidMount={(info: { event: CalendarEvent; el: HTMLElement }) => {
               // Add custom styling or tooltips
               const event = info.event;
               const status = event.extendedProps.status;
@@ -180,15 +189,15 @@ export const CarCalendarView = ({ cars }: CarCalendarViewProps) => {
         <div className="mt-6 flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-green-500 rounded"></div>
-            <span>Confirmed Booking</span>
+            <span>{t('vendor.confirmedBooking')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-yellow-500 rounded border-dashed border-2"></div>
-            <span>Pending Booking</span>
+            <span>{t('vendor.pendingBooking')}</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-4 h-4 bg-red-500 rounded opacity-60"></div>
-            <span>Cancelled Booking</span>
+            <span>{t('vendor.cancelledBooking')}</span>
           </div>
         </div>
       </CardContent>

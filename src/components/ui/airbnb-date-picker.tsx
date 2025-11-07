@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { DateRange, RangeKeyDict } from 'react-date-range';
-import { Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/shared/components/card';
 import { cn } from '@/lib/utils';
@@ -92,13 +92,14 @@ export const AirbnbDatePicker = ({
     return placeholder;
   };
 
-  const isDateDisabled = (date: Date): boolean => {
-    if (minDate && date < minDate) return true;
-    if (maxDate && date > maxDate) return true;
-    return disabledDates.some(disabledDate => 
-      date.toDateString() === disabledDate.toDateString()
-    );
-  };
+  // Note: isDateDisabled is available for future use if needed
+  // const isDateDisabled = (date: Date): boolean => {
+  //   if (minDate && date < minDate) return true;
+  //   if (maxDate && date > maxDate) return true;
+  //   return disabledDates.some(disabledDate => 
+  //     date.toDateString() === disabledDate.toDateString()
+  //   );
+  // };
 
   return (
     <div className={cn("relative", className)} ref={pickerRef}>

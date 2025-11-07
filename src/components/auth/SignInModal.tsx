@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { X, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
 
 interface SignInModalProps {
   isOpen: boolean
@@ -109,7 +108,7 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
 
         {/* Footer */}
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <button className="text-primary hover:underline">
             Sign up
           </button>

@@ -32,8 +32,20 @@ export function decodeJwt(token: string) {
   }
 }
 
+// JWT payload type
+type JWTPayload = {
+  sub?: string;
+  roles?: string[];
+  exp?: number;
+  iat?: number;
+  email?: string;
+  name?: string;
+  phone?: string;
+  [key: string]: unknown;
+};
+
 // Additional auth utilities (dummy implementations)
-export function createAccessToken(payload: any): string {
+export function createAccessToken(payload: JWTPayload): string {
   // Dummy implementation - in real app, use a JWT library
   const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
   const body = btoa(JSON.stringify(payload))

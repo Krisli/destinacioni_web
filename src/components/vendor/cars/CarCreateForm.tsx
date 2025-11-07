@@ -10,10 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Car, Upload } from 'lucide-react';
 import Link from 'next/link';
-import { useLanguage } from '@/shared/components/LanguageProvider';
 
 export const CarCreateForm = () => {
-  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {

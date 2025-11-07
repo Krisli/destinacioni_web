@@ -1,14 +1,13 @@
 'use client'
 
 import React from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Home, Edit, Trash2, Eye, MapPin, Users, Bed } from 'lucide-react';
-import { useLanguage } from '@/shared/components/LanguageProvider';
 import Link from 'next/link';
 
 export const ApartmentList = () => {
-  const { t } = useLanguage();
 
   // Mock data - replace with real data from API
   const apartments = [
@@ -73,11 +72,12 @@ export const ApartmentList = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {apartments.map((apartment) => (
           <Card key={apartment.id} className="overflow-hidden">
-            <div className="aspect-video bg-muted">
-              <img
+            <div className="aspect-video bg-muted relative">
+              <Image
                 src={apartment.image}
                 alt={apartment.title}
-                className="h-full w-full object-cover"
+                fill
+                className="object-cover"
               />
             </div>
             <CardHeader>

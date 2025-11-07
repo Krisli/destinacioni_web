@@ -16,7 +16,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 const translations = {
   en: {
     home: 'Home',
-    cars: 'Cars',
+    carsTitle: 'Cars',
     apartments: 'Apartments',
     contact: 'Contact',
     signIn: 'Sign In',
@@ -144,10 +144,7 @@ const translations = {
     previous: 'Previous',
     next: 'Next',
     unavailable: 'Unavailable',
-    learnMore: 'Learn More',
-    quickFilters: 'Quick Filters',
     unlimitedMileage: 'Unlimited Mileage',
-    instantConfirmation: 'Instant Confirmation',
     applyFilters: 'Apply Filters',
     mapPlaceholder: 'Interactive Map',
     mapDescription: 'View car locations on the map',
@@ -156,9 +153,6 @@ const translations = {
     tip1: 'Try different date ranges',
     tip2: 'Expand your location search',
     tip3: 'Check different vehicle types',
-    // Header translations
-    skipToContent: 'Skip to content',
-    addListing: 'Add Listing',
     // Authentication translations
     userLogin: 'User Login',
     vendorLogin: 'Vendor Login',
@@ -260,6 +254,16 @@ const translations = {
       analytics: 'Analytics',
       // Calendar
       calendar: 'Calendar',
+      carAvailabilityCalendar: 'Car Availability Calendar',
+      viewManageAvailability: 'View and manage car availability with professional calendar interface',
+      month: 'Month',
+      week: 'Week',
+      list: 'List',
+      today: 'Today',
+      day: 'Day',
+      confirmedBooking: 'Confirmed Booking',
+      pendingBooking: 'Pending Booking',
+      cancelledBooking: 'Cancelled Booking',
       // Settings
       settings: 'Settings',
       settingsPlaceholder: 'Manage your account settings and preferences',
@@ -273,7 +277,6 @@ const translations = {
       enterExactModel: 'Enter the exact model name',
       privateInformation: 'Private information, not shown to customers',
       forInsuranceVerification: 'For insurance and verification purposes',
-      uploadPhotos: 'Upload Photos',
       addHighQualityPhotos: 'Add high-quality photos of your car (minimum 3 photos required)',
       photosIncreaseBookings: 'High-quality photos increase booking rates by up to 40%. Include exterior, interior, and engine photos.',
       dragDropPhotos: 'Drag & drop photos here',
@@ -331,7 +334,6 @@ const translations = {
       selectDatesToBlock: 'Select dates to block',
       blockSelectedDates: 'Block Selected Dates',
       clearSelection: 'Clear Selection',
-      quickActions: 'Quick Actions',
       blockSelectedDate: 'Block selected date',
       setSpecialPrice: 'Set special price',
       blockAllWeekends: 'Block all weekends (next 3 months)',
@@ -345,22 +347,17 @@ const translations = {
       followSteps: 'Follow these steps to create your car listing',
       step: 'Step',
       basics: 'Basics',
-      photos: 'Photos',
       pricingPoliciesShort: 'Pricing & Policies',
-      availability: 'Availability',
-      backToCars: 'Back to Cars',
       saveExit: 'Save & Exit',
       back: 'Back',
       next: 'Next',
-      publishListing: 'Publish Listing',
-      publishing: 'Publishing...',
       pleaseSelectCarMake: 'Please select a car make.',
       pleaseFillRequiredFields: 'Please fill in all required fields.',
     },
   },
   al: {
     home: 'Ballina',
-    cars: 'Makinat',
+    carsTitle: 'Makinat',
     apartments: 'Apartamentet',
     contact: 'Kontakti',
     signIn: 'Hyr',
@@ -488,10 +485,7 @@ const translations = {
     previous: 'Mëparshme',
     next: 'Tjetra',
     unavailable: 'E Padisponueshme',
-    learnMore: 'Mëso Më Shumë',
-    quickFilters: 'Filtrat e Shpejtë',
     unlimitedMileage: 'Kilometrazh i Pakufizuar',
-    instantConfirmation: 'Konfirmim i Menjëhershëm',
     applyFilters: 'Apliko Filtrat',
     mapPlaceholder: 'Harta Interaktive',
     mapDescription: 'Shiko vendndodhjet e makinave në hartë',
@@ -500,9 +494,6 @@ const translations = {
     tip1: 'Provo vargje të ndryshme datash',
     tip2: 'Zgjero kërkimin e vendit',
     tip3: 'Kontrollo lloje të ndryshme automjetesh',
-    // Header translations
-    skipToContent: 'Kalo në përmbajtje',
-    addListing: 'Shto Listim',
     // Authentication translations
     userLogin: 'Hyrja e Përdoruesit',
     vendorLogin: 'Hyrja e Furnizuesit',
@@ -604,6 +595,16 @@ const translations = {
       analytics: 'Analitika',
       // Calendar
       calendar: 'Kalendari',
+      carAvailabilityCalendar: 'Kalendari i Disponueshmërisë së Makinave',
+      viewManageAvailability: 'Shikoni dhe menaxhoni disponueshmërinë e makinave me një ndërfaqe kalendari profesionale',
+      month: 'Muaj',
+      week: 'Javë',
+      list: 'Listë',
+      today: 'Sot',
+      day: 'Ditë',
+      confirmedBooking: 'Rezervim i Konfirmuar',
+      pendingBooking: 'Rezervim në Pritje',
+      cancelledBooking: 'Rezervim i Anuluar',
       // Settings
       settings: 'Cilësimet',
       settingsPlaceholder: 'Menaxho cilësimet dhe preferencat e llogarisë suaj',
@@ -617,7 +618,6 @@ const translations = {
       enterExactModel: 'Shkruani emrin e saktë të modelit',
       privateInformation: 'Informacion privat, nuk shfaqet për klientët',
       forInsuranceVerification: 'Për qëllime sigurimi dhe verifikimi',
-      uploadPhotos: 'Ngarko Foto',
       addHighQualityPhotos: 'Shtoni foto me cilësi të lartë të makinës suaj (kërkohen të paktën 3 foto)',
       photosIncreaseBookings: 'Fotot me cilësi të lartë rrisin normat e rezervimit deri në 40%. Përfshini foto të jashtme, të brendshme dhe motorit.',
       dragDropPhotos: 'Tërhiq dhe lësho foto këtu',
@@ -675,7 +675,6 @@ const translations = {
       selectDatesToBlock: 'Zgjidhni datat për t\'i bllokuar',
       blockSelectedDates: 'Blloko Datat e Zgjedhura',
       clearSelection: 'Pastro Zgjedhjen',
-      quickActions: 'Veprimet e Shpejta',
       blockSelectedDate: 'Blloko datën e zgjedhur',
       setSpecialPrice: 'Vendos çmim special',
       blockAllWeekends: 'Blloko të gjitha fundjavët (3 muajt e ardhshëm)',
@@ -689,15 +688,10 @@ const translations = {
       followSteps: 'Ndiqni këto hapa për të krijuar listimin tuaj të makinës',
       step: 'Hapi',
       basics: 'Bazat',
-      photos: 'Foto',
       pricingPoliciesShort: 'Çmimi dhe Politikët',
-      availability: 'Disponueshmëria',
-      backToCars: 'Kthehu te Makinat',
       saveExit: 'Ruaj dhe Dil',
       back: 'Kthehu',
       next: 'Tjetra',
-      publishListing: 'Publiko Listimin',
-      publishing: 'Duke publikuar...',
       pleaseSelectCarMake: 'Ju lutemi zgjidhni një markë makine.',
       pleaseFillRequiredFields: 'Ju lutemi plotësoni të gjitha fushat e kërkuara.',
     },
@@ -726,11 +720,11 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
 
   const t = (key: string): string => {
     const keys = key.split('.');
-    let value: any = translations[language];
+    let value: string | Record<string, unknown> = translations[language];
     
     for (const k of keys) {
       if (value && typeof value === 'object' && k in value) {
-        value = value[k];
+        value = value[k] as string | Record<string, unknown>;
       } else {
         return key;
       }

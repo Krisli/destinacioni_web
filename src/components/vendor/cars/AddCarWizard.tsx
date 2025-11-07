@@ -11,10 +11,7 @@ import {
   Camera, 
   Euro, 
   Calendar as CalendarIcon,
-  MapPin,
-  GripVertical,
   Image,
-  Star,
   DollarSign,
   Shield,
   AlertCircle,
@@ -23,13 +20,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SearchableCarMakeSelect } from "./SearchableCarMakeSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/card";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
 import { AirbnbDatePicker } from "@/components/ui/airbnb-date-picker";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -93,14 +87,18 @@ interface FormData {
 }
 
 // Props interfaces for step components
+type IconComponent = React.ComponentType<{ className?: string }>;
+
 interface StepIndicatorProps {
   currentStep: number;
-  steps: Array<{ id: number; title: string; icon: any }>;
+  steps: Array<{ id: number; title: string; icon: IconComponent }>;
 }
+
+type FormFieldValue = string | number | boolean | Date | File[] | SeasonalPrice[] | { date: Date; price: number }[] | Date[] | null;
 
 interface Step1BasicsProps {
   formData: FormData;
-  updateField: (field: keyof FormData, value: any) => void;
+  updateField: (field: keyof FormData, value: FormFieldValue) => void;
   carMakes: Array<{ id: string; name: string }>;
   loadingMakes: boolean;
   handleMakeChange: (makeId: string) => void;
@@ -108,19 +106,19 @@ interface Step1BasicsProps {
 
 interface Step2PhotosProps {
   formData: FormData;
-  updateField: (field: keyof FormData, value: any) => void;
+  updateField: (field: keyof FormData, value: FormFieldValue) => void;
 }
 
 interface Step3PricingProps {
   formData: FormData;
-  updateField: (field: keyof FormData, value: any) => void;
+  updateField: (field: keyof FormData, value: FormFieldValue) => void;
   selectedDate: Date | undefined;
   setSelectedDate: (date: Date | undefined) => void;
 }
 
 interface Step4AvailabilityProps {
   formData: FormData;
-  updateField: (field: keyof FormData, value: any) => void;
+  updateField: (field: keyof FormData, value: FormFieldValue) => void;
   t: (key: string) => string;
 }
 
@@ -370,7 +368,7 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
   );
 };
 
-const Step2Photos = ({ formData, updateField }: Step2PhotosProps) => {
+const Step2Photos = ({}: Step2PhotosProps) => {
   const { t } = useLanguage();
   return (
   <Card className="max-w-4xl mx-auto">
@@ -405,7 +403,7 @@ const Step2Photos = ({ formData, updateField }: Step2PhotosProps) => {
         {[1, 2, 3, 4].map((index) => (
           <div key={index} className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/20">
             <div className="text-center">
-              <Image className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <Image className="h-8 w-8 mx-auto text-muted-foreground mb-2" aria-label={`Photo placeholder ${index}`} />
               <p className="text-xs text-muted-foreground">Photo {index}</p>
             </div>
           </div>
@@ -440,7 +438,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
     updateField('seasonalPrices', [...formData.seasonalPrices, newSeason]);
   };
 
-  const updateSeasonalPrice = (id: string, field: keyof SeasonalPrice, value: any) => {
+  const updateSeasonalPrice = (id: string, field: keyof SeasonalPrice, value: string | number | Date | 'peak' | 'off' | 'standard') => {
     const updatedPrices = formData.seasonalPrices.map(price => 
       price.id === id ? { ...price, [field]: value } : price
     );
@@ -464,23 +462,24 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
     return seasonalPrice ? seasonalPrice.price : parseFloat(formData.basePrice) || 0;
   };
 
-  const getDateTypeColor = (date: Date): string => {
-    if (!formData.seasonalPricingEnabled) return 'bg-blue-100 text-blue-800';
-    
-    const seasonalPrice = formData.seasonalPrices.find(season => {
-      const seasonStart = new Date(season.startDate);
-      const seasonEnd = new Date(season.endDate);
-      return date >= seasonStart && date <= seasonEnd;
-    });
-    
-    if (!seasonalPrice) return 'bg-blue-100 text-blue-800';
-    
-    switch (seasonalPrice.type) {
-      case 'peak': return 'bg-red-100 text-red-800';
-      case 'off': return 'bg-green-100 text-green-800';
-      default: return 'bg-blue-100 text-blue-800';
-    }
-  };
+  // Note: getDateTypeColor is available for future use if needed
+  // const getDateTypeColor = (date: Date): string => {
+  //   if (!formData.seasonalPricingEnabled) return 'bg-blue-100 text-blue-800';
+  //   
+  //   const seasonalPrice = formData.seasonalPrices.find(season => {
+  //     const seasonStart = new Date(season.startDate);
+  //     const seasonEnd = new Date(season.endDate);
+  //     return date >= seasonStart && date <= seasonEnd;
+  //   });
+  //   
+  //   if (!seasonalPrice) return 'bg-blue-100 text-blue-800';
+  //   
+  //   switch (seasonalPrice.type) {
+  //     case 'peak': return 'bg-red-100 text-red-800';
+  //     case 'off': return 'bg-green-100 text-green-800';
+  //     default: return 'bg-blue-100 text-blue-800';
+  //   }
+  // };
 
   return (
     <Card className="max-w-6xl mx-auto">
@@ -640,7 +639,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                   <AirbnbDatePicker
                     startDate={undefined}
                     endDate={undefined}
-                    onChange={(startDate, endDate) => {
+                    onChange={(startDate) => {
                       setSelectedDate(startDate || new Date());
                     }}
                     disabledDates={[]}
@@ -995,7 +994,7 @@ export const AddCarWizard = () => {
   ];
 
   // Update field - simple state update
-  const updateField = (field: keyof FormData, value: any) => {
+  const updateField = (field: keyof FormData, value: FormFieldValue) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 

@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { 
   MoreHorizontal, 
   Edit, 
   Calendar, 
   Eye,
   Car,
-  Plus,
   Copy,
   Trash
 } from "lucide-react";
@@ -108,10 +108,12 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
               checked={selectedCars.includes(car.id)}
               onCheckedChange={(checked) => onSelectCar(car.id, checked as boolean)}
             />
-            <img 
+            <Image 
               src={car.photo} 
               alt={`${car.make} ${car.model}`}
-              className="w-16 h-12 object-cover rounded-lg"
+              width={64}
+              height={48}
+              className="object-cover rounded-lg"
             />
             <div>
               <h3 className="font-semibold text-foreground">

@@ -84,7 +84,7 @@ export function ModernHeader() {
               href="/cars"
               className={cn('font-medium transition-colors hover:text-primary', isScrolled ? 'text-foreground' : 'text-white')}
             >
-              {t('cars')}
+              {t('carsTitle')}
             </Link>
             <Link
               href="/apartments"
@@ -148,7 +148,7 @@ export function ModernHeader() {
             <nav className="flex flex-col space-y-4 pt-4" aria-label="Mobile primary">
               {[
                 { href: '/', label: t('home') },
-                { href: '/cars', label: t('cars') },
+                { href: '/cars', label: t('carsTitle') },
                 { href: '/apartments', label: t('apartments') },
                 { href: '/contact', label: t('contact') },
               ].map((item) => (

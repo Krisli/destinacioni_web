@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { Search, Calendar, MapPin, Users } from 'lucide-react';
+import { Search, Calendar, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useLanguage } from '@/shared/components/LanguageProvider';

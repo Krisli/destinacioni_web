@@ -9,7 +9,7 @@ interface CarDetailsSidebarProps {
   };
 }
 
-export const CarDetailsSidebar = ({ carId, searchParams }: CarDetailsSidebarProps) => {
+export const CarDetailsSidebar = ({ carId }: CarDetailsSidebarProps) => {
   const { t } = useLanguage();
 
   return (

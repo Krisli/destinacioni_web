@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from "react";
-import { Grid, List, Car, Users, Luggage, Fuel, Settings, MapPin, Star, Map } from "lucide-react";
+import { Grid, List, Users, Luggage, Fuel, Settings, MapPin, Star, Map } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,7 +28,7 @@ const mercedesSedanImage = "https://images.unsplash.com/photo-1618843479313-40f8
 type LoadingPhase = 'splash' | 'skeleton' | 'idle';
 
 const CarListingsContent = () => {
-  const { filters, dispatch, getActiveFilterCount } = useFilters();
+  const { filters, dispatch } = useFilters();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [showMap, setShowMap] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState<LoadingPhase>('splash');
@@ -66,6 +66,7 @@ const CarListingsContent = () => {
       setLoadingPhase('skeleton');
     }
   }, [
+    isInitialLoad,
     filters.carType, 
     filters.transmission, 
     filters.fuelType, 

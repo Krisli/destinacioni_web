@@ -11,11 +11,9 @@ import {
   setStoredRefreshToken,
   removeStoredRefreshToken,
   isTokenExpired,
-  decodeJWT,
-  type JWTPayload 
+  decodeJWT
 } from './jwt';
 import { 
-  getCurrentUser, 
   refreshToken,
   type User 
 } from './api';
@@ -68,6 +66,7 @@ export async function getUser(): Promise<AuthUser | null> {
         } catch (error) {
           // Refresh failed, clear tokens
           clearAuthData();
+          console.log(error);
           return null;
         }
       } else {
