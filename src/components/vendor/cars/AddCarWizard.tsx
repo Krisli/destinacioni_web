@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SearchableCarMakeSelect } from "./SearchableCarMakeSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -184,22 +185,13 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div className="space-y-2">
           <Label htmlFor="make">Car Make *</Label>
-          <Select 
-            value={formData.makeId} 
+          <SearchableCarMakeSelect
+            carMakes={carMakes}
+            value={formData.makeId}
             onValueChange={handleMakeChange}
             disabled={loadingMakes}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={loadingMakes ? "Loading makes..." : "Select make"} />
-            </SelectTrigger>
-            <SelectContent>
-              {carMakes.map((make) => (
-                <SelectItem key={make.id} value={make.id}>
-                  {make.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={loadingMakes ? "Loading makes..." : "Select make"}
+          />
         </div>
         
         <div className="space-y-2">

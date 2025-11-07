@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SearchableCarMakeSelect } from './SearchableCarMakeSelect';
 import { ArrowLeft, Car, Save } from 'lucide-react';
 import { useLanguage } from '@/shared/components/LanguageProvider';
 import { getCarById, updateCar, getCarMakes, CarResponse, CarMake, CreateCarRequest } from '@/lib/api/cars';
@@ -56,13 +57,14 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
         const car = await getCarById(carId);
         
         // Map API response to form data
+        // Normalize enum values to lowercase to match Select component values
         setFormData({
           makeId: car.makeId,
           model: car.model,
           year: car.year,
-          bodyType: car.bodyType || '',
-          transmission: car.transmission,
-          fuelType: car.fuelType,
+          bodyType: car.bodyType ? car.bodyType.toLowerCase() : '',
+          transmission: car.transmission ? car.transmission.toLowerCase() : '',
+          fuelType: car.fuelType ? car.fuelType.toLowerCase() : '',
           drive: car.drive || '',
           seats: car.seats,
           doors: car.doors,
@@ -178,22 +180,13 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="makeId">Car Make *</Label>
-                <Select 
-                  value={formData.makeId} 
+                <SearchableCarMakeSelect
+                  carMakes={carMakes}
+                  value={formData.makeId}
                   onValueChange={(value) => updateField('makeId', value)}
                   disabled={loadingMakes}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={loadingMakes ? "Loading makes..." : "Select make"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {carMakes.map((make) => (
-                      <SelectItem key={make.id} value={make.id}>
-                        {make.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={loadingMakes ? "Loading makes..." : "Select make"}
+                />
               </div>
               
               <div className="space-y-2">
