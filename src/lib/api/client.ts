@@ -116,6 +116,8 @@ export async function apiClient<T>(
   };
 
   // Add authorization header if token exists
+  // Format: Authorization: Bearer <jwt_token>
+  // This header is automatically included in all authenticated requests to the .NET API
   if (token && !skipAuth) {
     requestHeaders['Authorization'] = `Bearer ${token}`;
   }
