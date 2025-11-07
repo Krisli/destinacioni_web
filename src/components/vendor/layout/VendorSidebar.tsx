@@ -20,12 +20,12 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/shared/components/LanguageProvider';
 
 const navigation = [
-  { name: 'Dashboard', href: '/vendor', icon: LayoutDashboard },
-  { name: 'Cars', href: '/vendor/cars', icon: Car },
-  { name: 'Apartments', href: '/vendor/apartments', icon: Home },
-  { name: 'Bookings', href: '/vendor/bookings', icon: Calendar },
-  { name: 'Analytics', href: '/vendor/analytics', icon: BarChart3 },
-  { name: 'Settings', href: '/vendor/settings', icon: Settings },
+  { name: 'dashboard', href: '/vendor', icon: LayoutDashboard },
+  { name: 'cars', href: '/vendor/cars', icon: Car },
+  { name: 'apartments', href: '/vendor/apartments', icon: Home },
+  { name: 'bookings', href: '/vendor/bookings', icon: Calendar },
+  { name: 'analytics', href: '/vendor/analytics', icon: BarChart3 },
+  { name: 'settings', href: '/vendor/settings', icon: Settings },
 ];
 
 export const VendorSidebar = () => {
@@ -69,7 +69,7 @@ export const VendorSidebar = () => {
               className="w-full justify-start"
             >
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-              {!collapsed && <span className="ml-2">Collapse</span>}
+              {!collapsed && <span className="ml-2">{t('vendor.collapse')}</span>}
             </Button>
           </div>
 
@@ -92,7 +92,7 @@ export const VendorSidebar = () => {
                   )}
                 >
                   <Icon className="h-4 w-4" />
-                  {!collapsed && <span className="ml-3">{t(item.name.toLowerCase()) || item.name}</span>}
+                  {!collapsed && <span className="ml-3">{t(`vendor.${item.name}`)}</span>}
                 </Link>
               );
             })}
@@ -117,7 +117,7 @@ export const VendorSidebar = () => {
         <div className="flex flex-col h-full">
           {/* Mobile Header */}
           <div className="flex items-center justify-between p-4 border-b border-border">
-            <h2 className="text-lg font-semibold">Menu</h2>
+            <h2 className="text-lg font-semibold">{t('vendor.menu')}</h2>
             <Button
               variant="ghost"
               size="sm"
@@ -146,7 +146,7 @@ export const VendorSidebar = () => {
                   )}
                 >
                   <Icon className="h-4 w-4" />
-                  <span className="ml-3">{t(item.name.toLowerCase()) || item.name}</span>
+                  <span className="ml-3">{t(`vendor.${item.name}`)}</span>
                 </Link>
               );
             })}

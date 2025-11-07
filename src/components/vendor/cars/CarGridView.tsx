@@ -89,11 +89,11 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
   const getStatusBadge = (status: Car['status']) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-success">Active</Badge>;
+        return <Badge variant="default" className="bg-success">{t('vendor.active')}</Badge>;
       case 'draft':
-        return <Badge variant="secondary">Draft</Badge>;
+        return <Badge variant="secondary">{t('vendor.draft')}</Badge>;
       case 'inactive':
-        return <Badge variant="destructive">Inactive</Badge>;
+        return <Badge variant="destructive">{t('vendor.inactive')}</Badge>;
       default:
         return null;
     }
@@ -131,7 +131,7 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => handleEditClick(car.id)}>
                 <Edit className="h-4 w-4 mr-2" />
-                Edit
+                {t('vendor.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Calendar className="h-4 w-4 mr-2" />
@@ -150,7 +150,7 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
                 onClick={() => handleDeleteClick(car.id)}
               >
                 <Trash className="h-4 w-4 mr-2" />
-                Delete
+                {t('vendor.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -181,19 +181,19 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Car</AlertDialogTitle>
+            <AlertDialogTitle>{t('vendor.deleteCar')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this car? This action cannot be undone.
+              {t('vendor.deleteCarConfirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{t('vendor.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? t('vendor.delete') + '...' : t('vendor.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

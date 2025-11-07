@@ -90,11 +90,11 @@ export const CarListView = ({ cars, selectedCars, onSelectAll, onSelectCar }: Ca
   const getStatusBadge = (status: Car['status']) => {
     switch (status) {
       case 'active':
-        return <Badge variant="default" className="bg-success">Active</Badge>;
+        return <Badge variant="default" className="bg-success">{t('vendor.active')}</Badge>;
       case 'draft':
-        return <Badge variant="secondary">Draft</Badge>;
+        return <Badge variant="secondary">{t('vendor.draft')}</Badge>;
       case 'inactive':
-        return <Badge variant="destructive">Inactive</Badge>;
+        return <Badge variant="destructive">{t('vendor.inactive')}</Badge>;
       default:
         return null;
     }
@@ -111,14 +111,14 @@ export const CarListView = ({ cars, selectedCars, onSelectAll, onSelectCar }: Ca
                 onCheckedChange={onSelectAll}
               />
             </TableHead>
-            <TableHead>Car</TableHead>
-            <TableHead className="hidden sm:table-cell">Transmission</TableHead>
-            <TableHead className="hidden md:table-cell">Fuel</TableHead>
-            <TableHead className="hidden md:table-cell">Seats</TableHead>
-            <TableHead>Price/day</TableHead>
-            <TableHead className="hidden sm:table-cell">Status</TableHead>
+            <TableHead>{t('vendor.cars')}</TableHead>
+            <TableHead className="hidden sm:table-cell">{t('transmission')}</TableHead>
+            <TableHead className="hidden md:table-cell">{t('vendor.fuelType')}</TableHead>
+            <TableHead className="hidden md:table-cell">{t('vendor.seats')}</TableHead>
+            <TableHead>{t('cars.perDay')}</TableHead>
+            <TableHead className="hidden sm:table-cell">{t('vendor.status')}</TableHead>
             <TableHead className="hidden lg:table-cell">Last Update</TableHead>
-            <TableHead className="w-12">Actions</TableHead>
+            <TableHead className="w-12">{t('vendor.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -163,22 +163,22 @@ export const CarListView = ({ cars, selectedCars, onSelectAll, onSelectCar }: Ca
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => handleEditClick(car.id)}>
                       <Edit className="h-4 w-4 mr-2" />
-                      Edit
+                      {t('vendor.edit')}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Calendar className="h-4 w-4 mr-2" />
-                      Availability
+                      {t('vendor.availability')}
                     </DropdownMenuItem>
                     <DropdownMenuItem>
                       <Eye className="h-4 w-4 mr-2" />
-                      View
+                      {t('viewDetails')}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       className="text-red-600"
                       onClick={() => handleDeleteClick(car.id)}
                     >
                       <Trash className="h-4 w-4 mr-2" />
-                      Delete
+                      {t('vendor.delete')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -191,19 +191,19 @@ export const CarListView = ({ cars, selectedCars, onSelectAll, onSelectCar }: Ca
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Car</AlertDialogTitle>
+            <AlertDialogTitle>{t('vendor.deleteCar')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this car? This action cannot be undone.
+              {t('vendor.deleteCarConfirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>{t('vendor.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? t('vendor.delete') + '...' : t('vendor.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

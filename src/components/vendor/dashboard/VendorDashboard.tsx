@@ -13,12 +13,12 @@ export const VendorDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back to your vendor portal</p>
+          <h1 className="text-3xl font-bold text-foreground">{t('vendor.dashboard')}</h1>
+          <p className="text-muted-foreground">{t('vendor.welcomeBack')}</p>
         </div>
         <Button className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
-          Add New Listing
+          {t('vendor.addNewListing')}
         </Button>
       </div>
 
@@ -26,45 +26,45 @@ export const VendorDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('vendor.totalBookings')}</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">24</div>
-            <p className="text-xs text-muted-foreground">+12% from last month</p>
+            <p className="text-xs text-muted-foreground">+12% {t('vendor.fromLastMonth')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Listings</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('vendor.activeListings')}</CardTitle>
             <Car className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">8</div>
-            <p className="text-xs text-muted-foreground">+2 new this week</p>
+            <p className="text-xs text-muted-foreground">+2 {t('vendor.newThisWeek')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('vendor.revenue')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">€2,450</div>
-            <p className="text-xs text-muted-foreground">+8% from last month</p>
+            <p className="text-xs text-muted-foreground">+8% {t('vendor.fromLastMonth')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('vendor.customers')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">156</div>
-            <p className="text-xs text-muted-foreground">+5 new this week</p>
+            <p className="text-xs text-muted-foreground">+5 {t('vendor.newThisWeek')}</p>
           </CardContent>
         </Card>
       </div>
@@ -73,7 +73,7 @@ export const VendorDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Recent Bookings</CardTitle>
+            <CardTitle>{t('vendor.recentBookings')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -99,21 +99,21 @@ export const VendorDashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle>{t('vendor.quickActions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <Button variant="outline" className="w-full justify-start">
                 <Car className="h-4 w-4 mr-2" />
-                Manage Listings
+                {t('vendor.manageListings')}
               </Button>
               <Button variant="outline" className="w-full justify-start">
                 <Calendar className="h-4 w-4 mr-2" />
-                View Calendar
+                {t('vendor.viewCalendar')}
               </Button>
               <Button variant="outline" className="w-full justify-start">
                 <TrendingUp className="h-4 w-4 mr-2" />
-                View Analytics
+                {t('vendor.viewAnalytics')}
               </Button>
             </div>
           </CardContent>

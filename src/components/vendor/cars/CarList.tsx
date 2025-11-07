@@ -124,13 +124,12 @@ export const CarList = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('cars')}</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">Manage your vehicle listings</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">{t('vendor.cars')}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{t('vendor.manageListings')}</p>
         </div>
         <Button variant="hero" className="gap-2 w-full sm:w-auto" onClick={() => router.push('/vendor/cars/add')}>
             <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">{t('addNewCar')}</span>
-          <span className="sm:hidden">Add Car</span>
+          <span>{t('vendor.addCar')}</span>
           </Button>
       </div>
 
@@ -142,7 +141,7 @@ export const CarList = () => {
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search cars..."
+                  placeholder={t('vendor.searchCars')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -153,23 +152,23 @@ export const CarList = () => {
               <div className="flex gap-2">
                 <Select>
                   <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="Status" />
+                    <SelectValue placeholder={t('vendor.status')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="draft">Draft</SelectItem>
-                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="all">{t('vendor.status')}</SelectItem>
+                    <SelectItem value="active">{t('vendor.active')}</SelectItem>
+                    <SelectItem value="draft">{t('vendor.draft')}</SelectItem>
+                    <SelectItem value="inactive">{t('vendor.inactive')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <Select>
                   <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="Transmission" />
+                    <SelectValue placeholder={t('transmission')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="manual">Manual</SelectItem>
-                    <SelectItem value="automatic">Automatic</SelectItem>
+                    <SelectItem value="all">{t('allTypes')}</SelectItem>
+                    <SelectItem value="manual">{t('manual')}</SelectItem>
+                    <SelectItem value="automatic">{t('automatic')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -255,7 +254,7 @@ export const CarList = () => {
         <Card>
           <CardContent className="p-12 text-center">
             <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading cars...</p>
+            <p className="text-muted-foreground">{t('vendor.loadingCars')}</p>
           </CardContent>
         </Card>
       )}
@@ -264,10 +263,10 @@ export const CarList = () => {
       {error && !loading && (
         <Card className="border-destructive">
           <CardContent className="p-12 text-center">
-            <h3 className="text-xl font-semibold mb-2 text-destructive">Error loading cars</h3>
+            <h3 className="text-xl font-semibold mb-2 text-destructive">{t('vendor.errorLoadingCars')}</h3>
             <p className="text-muted-foreground mb-6">{error}</p>
             <Button variant="outline" onClick={() => window.location.reload()}>
-              Retry
+              {t('previous')}
             </Button>
           </CardContent>
         </Card>
@@ -278,13 +277,13 @@ export const CarList = () => {
         <Card className="border-dashed border-2">
           <CardContent className="p-12 text-center">
             <Car className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No cars yet</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('vendor.noCarsFound')}</h3>
             <p className="text-muted-foreground mb-6">
-              {t('noCarsYet')}
+              {t('vendor.noCarsFound')}
             </p>
             <Button variant="hero" size="lg" className="gap-2" onClick={() => router.push('/vendor/cars/add')}>
                 <Plus className="h-4 w-4" />
-              {t('addNewCar')}
+              {t('vendor.addCar')}
               </Button>
           </CardContent>
         </Card>

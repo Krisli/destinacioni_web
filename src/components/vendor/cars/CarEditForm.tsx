@@ -147,12 +147,12 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
       <div className="flex items-center gap-4">
         <Button variant="outline" size="sm" className="gap-2" onClick={() => router.push('/vendor/cars')}>
           <ArrowLeft className="h-4 w-4" />
-          Back to Cars
+          {t('vendor.backToCars')}
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Edit Car</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('vendor.editCar')}</h1>
           <p className="text-muted-foreground">
-            Update your car rental listing
+            {t('vendor.updateCarListing')}
           </p>
         </div>
       </div>
@@ -170,27 +170,27 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Car className="h-5 w-5" />
-              Basic Information
+              {t('vendor.basicInformation')}
             </CardTitle>
             <CardDescription>
-              Essential details about your car
+              {t('vendor.essentialDetails')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="makeId">Car Make *</Label>
+                <Label htmlFor="makeId">{t('vendor.carMake')} *</Label>
                 <SearchableCarMakeSelect
                   carMakes={carMakes}
                   value={formData.makeId}
                   onValueChange={(value) => updateField('makeId', value)}
                   disabled={loadingMakes}
-                  placeholder={loadingMakes ? "Loading makes..." : "Select make"}
+                  placeholder={loadingMakes ? t('vendor.loadingCars') : t('vendor.selectMake')}
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="model">Model *</Label>
+                <Label htmlFor="model">{t('vendor.model')} *</Label>
                 <Input 
                   id="model"
                   value={formData.model}
@@ -203,10 +203,10 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="year">Year *</Label>
+                <Label htmlFor="year">{t('vendor.year')} *</Label>
                 <Select value={formData.year.toString()} onValueChange={(value) => updateField('year', parseInt(value, 10))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select year" />
+                    <SelectValue placeholder={t('vendor.selectYear')} />
                   </SelectTrigger>
                   <SelectContent>
                     {Array.from({ length: 15 }, (_, i) => 2024 - i).map(year => (
@@ -217,10 +217,10 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="bodyType">Body Type</Label>
+                <Label htmlFor="bodyType">{t('vendor.bodyType')}</Label>
                 <Select value={formData.bodyType} onValueChange={(value) => updateField('bodyType', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select type" />
+                    <SelectValue placeholder={t('vendor.selectType')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="sedan">Sedan</SelectItem>
@@ -234,10 +234,10 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="transmission">Transmission *</Label>
+                <Label htmlFor="transmission">{t('transmission')} *</Label>
                 <Select value={formData.transmission} onValueChange={(value) => updateField('transmission', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select transmission" />
+                    <SelectValue placeholder={t('vendor.selectTransmission')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="manual">Manual</SelectItem>
@@ -250,10 +250,10 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="fuelType">Fuel Type *</Label>
+                <Label htmlFor="fuelType">{t('vendor.fuelType')} *</Label>
                 <Select value={formData.fuelType} onValueChange={(value) => updateField('fuelType', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select fuel" />
+                    <SelectValue placeholder={t('vendor.selectFuel')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="petrol">Petrol</SelectItem>
@@ -266,10 +266,10 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="drive">Drive Type</Label>
+                <Label htmlFor="drive">{t('vendor.driveType')}</Label>
                 <Select value={formData.drive} onValueChange={(value) => updateField('drive', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select drive" />
+                    <SelectValue placeholder={t('vendor.selectDrive')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="FrontWheel">Front Wheel Drive</SelectItem>
@@ -280,10 +280,10 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="seats">Seats *</Label>
+                <Label htmlFor="seats">{t('vendor.seats')} *</Label>
                 <Select value={formData.seats.toString()} onValueChange={(value) => updateField('seats', parseInt(value, 10))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Seats" />
+                    <SelectValue placeholder={t('vendor.seats')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="2">2 seats</SelectItem>
@@ -296,10 +296,10 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="doors">Doors</Label>
+                <Label htmlFor="doors">{t('vendor.doors')}</Label>
                 <Select value={formData.doors.toString()} onValueChange={(value) => updateField('doors', parseInt(value, 10))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Doors" />
+                    <SelectValue placeholder={t('vendor.doors')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="2">2 doors</SelectItem>
@@ -310,10 +310,10 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="luggage">Luggage *</Label>
+                <Label htmlFor="luggage">{t('vendor.luggage')} *</Label>
                 <Select value={formData.luggage.toString()} onValueChange={(value) => updateField('luggage', parseInt(value, 10))}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Capacity" />
+                    <SelectValue placeholder={t('vendor.luggage')} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">Small (1-2 bags)</SelectItem>
@@ -326,7 +326,7 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="color">Color</Label>
+                <Label htmlFor="color">{t('vendor.color')}</Label>
                 <Input 
                   id="color"
                   value={formData.color}
@@ -336,7 +336,7 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="licensePlate">License Plate</Label>
+                <Label htmlFor="licensePlate">{t('vendor.licensePlate')}</Label>
                 <Input 
                   id="licensePlate"
                   value={formData.licensePlate}
@@ -347,7 +347,7 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="vin">VIN Number (Optional)</Label>
+              <Label htmlFor="vin">{t('vendor.vin')} ({t('vendor.optional')})</Label>
               <Input 
                 id="vin"
                 value={formData.vin}
@@ -364,11 +364,11 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
             variant="outline" 
             onClick={() => router.push('/vendor/cars')}
           >
-            Cancel
+            {t('vendor.cancel')}
           </Button>
           <Button type="submit" disabled={loading} className="gap-2">
             <Save className="h-4 w-4" />
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? t('vendor.saveChanges') + '...' : t('vendor.saveChanges')}
           </Button>
         </div>
       </form>

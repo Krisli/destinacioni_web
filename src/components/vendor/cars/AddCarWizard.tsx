@@ -126,6 +126,7 @@ interface Step4AvailabilityProps {
 
 // Top-level step components
 const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
+  const { t } = useLanguage();
   const progress = (currentStep / 4) * 100;
   
   return (
@@ -153,7 +154,7 @@ const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
                 "text-xs font-medium",
                 currentStep >= step.id ? "text-primary" : "text-muted-foreground"
               )}>
-                Step {step.id}
+                {t('vendor.step')} {step.id}
               </div>
               <div className="text-xs text-muted-foreground">{step.title}</div>
             </div>
@@ -170,48 +171,50 @@ const StepIndicator = ({ currentStep, steps }: StepIndicatorProps) => {
   );
 };
 
-const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMakeChange }: Step1BasicsProps) => (
+const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMakeChange }: Step1BasicsProps) => {
+  const { t } = useLanguage();
+  return (
   <Card className="max-w-4xl mx-auto">
     <CardHeader>
       <CardTitle className="flex items-center gap-2">
         <Car className="h-5 w-5" />
-        Basic Car Information
+        {t('vendor.basicCarInformation')}
       </CardTitle>
       <p className="text-sm text-muted-foreground">
-        Enter the basic details about your vehicle
+        {t('vendor.enterBasicDetails')}
       </p>
     </CardHeader>
     <CardContent className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <div className="space-y-2">
-          <Label htmlFor="make">Car Make *</Label>
+          <Label htmlFor="make">{t('vendor.carMake')} *</Label>
           <SearchableCarMakeSelect
             carMakes={carMakes}
             value={formData.makeId}
             onValueChange={handleMakeChange}
             disabled={loadingMakes}
-            placeholder={loadingMakes ? "Loading makes..." : "Select make"}
+            placeholder={loadingMakes ? t('vendor.loadingCars') : t('vendor.selectMake')}
           />
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="model">Model *</Label>
+          <Label htmlFor="model">{t('vendor.model')} *</Label>
           <Input 
             id="model"
             value={formData.model}
             onChange={(e) => updateField('model', e.target.value)}
             placeholder="e.g., Golf, 320i, C-Class"
           />
-          <p className="text-xs text-muted-foreground">Enter the exact model name</p>
+          <p className="text-xs text-muted-foreground">{t('vendor.enterExactModel')}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <div className="space-y-2">
-          <Label htmlFor="year">Year *</Label>
+          <Label htmlFor="year">{t('vendor.year')} *</Label>
           <Select value={formData.year} onValueChange={(value) => updateField('year', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Select year" />
+              <SelectValue placeholder={t('vendor.selectYear')} />
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 15 }, (_, i) => 2024 - i).map(year => (
@@ -222,10 +225,10 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="bodyType">Body Type</Label>
+          <Label htmlFor="bodyType">{t('vendor.bodyType')}</Label>
           <Select value={formData.bodyType} onValueChange={(value) => updateField('bodyType', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Select type" />
+              <SelectValue placeholder={t('vendor.selectType')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="sedan">Sedan</SelectItem>
@@ -239,10 +242,10 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="transmission">Transmission *</Label>
+          <Label htmlFor="transmission">{t('transmission')} *</Label>
           <Select value={formData.transmission} onValueChange={(value) => updateField('transmission', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Select transmission" />
+              <SelectValue placeholder={t('vendor.selectTransmission')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="manual">Manual</SelectItem>
@@ -255,10 +258,10 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
         <div className="space-y-2">
-          <Label htmlFor="fuel">Fuel Type *</Label>
+          <Label htmlFor="fuel">{t('vendor.fuelType')} *</Label>
           <Select value={formData.fuel} onValueChange={(value) => updateField('fuel', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Select fuel" />
+              <SelectValue placeholder={t('vendor.selectFuel')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="petrol">Petrol</SelectItem>
@@ -271,10 +274,10 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="drive">Drive Type</Label>
+          <Label htmlFor="drive">{t('vendor.driveType')}</Label>
           <Select value={formData.drive} onValueChange={(value) => updateField('drive', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Select drive" />
+              <SelectValue placeholder={t('vendor.selectDrive')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="FrontWheel">Front Wheel Drive</SelectItem>
@@ -285,10 +288,10 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="seats">Seats *</Label>
+          <Label htmlFor="seats">{t('vendor.seats')} *</Label>
           <Select value={formData.seats} onValueChange={(value) => updateField('seats', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Seats" />
+              <SelectValue placeholder={t('vendor.seats')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="2">2 seats</SelectItem>
@@ -301,10 +304,10 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="doors">Doors</Label>
+          <Label htmlFor="doors">{t('vendor.doors')}</Label>
           <Select value={formData.doors} onValueChange={(value) => updateField('doors', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Doors" />
+              <SelectValue placeholder={t('vendor.doors')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="2">2 doors</SelectItem>
@@ -315,10 +318,10 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="luggage">Luggage *</Label>
+          <Label htmlFor="luggage">{t('vendor.luggage')} *</Label>
           <Select value={formData.luggage} onValueChange={(value) => updateField('luggage', value)}>
             <SelectTrigger>
-              <SelectValue placeholder="Capacity" />
+              <SelectValue placeholder={t('vendor.luggage')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="small">Small (1-2 bags)</SelectItem>
@@ -331,7 +334,7 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <Label htmlFor="color">Color</Label>
+          <Label htmlFor="color">{t('vendor.color')}</Label>
           <Input 
             id="color"
             value={formData.color}
@@ -341,57 +344,60 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="plate">License Plate</Label>
+          <Label htmlFor="plate">{t('vendor.licensePlate')}</Label>
           <Input 
             id="plate"
             value={formData.plate}
             onChange={(e) => updateField('plate', e.target.value)}
             placeholder="TR 123 ABC"
           />
-          <p className="text-xs text-muted-foreground">Private information, not shown to customers</p>
+          <p className="text-xs text-muted-foreground">{t('vendor.privateInformation')}</p>
         </div>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="vin">VIN Number (Optional)</Label>
+        <Label htmlFor="vin">{t('vendor.vin')} ({t('vendor.optional')})</Label>
         <Input 
           id="vin"
           value={formData.vin}
           onChange={(e) => updateField('vin', e.target.value)}
           placeholder="Vehicle Identification Number"
         />
-        <p className="text-xs text-muted-foreground">For insurance and verification purposes</p>
+        <p className="text-xs text-muted-foreground">{t('vendor.forInsuranceVerification')}</p>
       </div>
     </CardContent>
   </Card>
-);
+  );
+};
 
-const Step2Photos = ({ formData, updateField }: Step2PhotosProps) => (
+const Step2Photos = ({ formData, updateField }: Step2PhotosProps) => {
+  const { t } = useLanguage();
+  return (
   <Card className="max-w-4xl mx-auto">
     <CardHeader>
       <CardTitle className="flex items-center gap-2">
         <Camera className="h-5 w-5" />
-        Upload Photos
+        {t('vendor.uploadPhotos')}
       </CardTitle>
       <p className="text-sm text-muted-foreground">
-        Add high-quality photos of your car (minimum 3 photos required)
+        {t('vendor.addHighQualityPhotos')}
       </p>
     </CardHeader>
     <CardContent className="space-y-6">
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          High-quality photos increase booking rates by up to 40%. Include exterior, interior, and engine photos.
+          {t('vendor.photosIncreaseBookings')}
         </AlertDescription>
       </Alert>
       
       <div className="border-2 border-dashed border-border rounded-lg p-12 text-center hover:border-primary/50 transition-smooth">
         <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h3 className="font-medium mb-2">Drag & drop photos here</h3>
+        <h3 className="font-medium mb-2">{t('vendor.dragDropPhotos')}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          or click to browse files (JPEG, PNG up to 10MB each)
+          {t('vendor.clickToBrowse')}
         </p>
-        <Button variant="outline" type="button">Browse Files</Button>
+        <Button variant="outline" type="button">{t('vendor.browseFiles')}</Button>
       </div>
 
       {/* Photo grid placeholder */}
@@ -407,19 +413,21 @@ const Step2Photos = ({ formData, updateField }: Step2PhotosProps) => (
       </div>
 
       <div className="space-y-3">
-        <h4 className="font-medium">Photo Tips:</h4>
+        <h4 className="font-medium">{t('vendor.photoTips')}</h4>
         <ul className="text-sm text-muted-foreground space-y-1">
-          <li>• Take photos in good lighting (natural daylight preferred)</li>
-          <li>• Clean your car before photographing</li>
-          <li>• Include exterior from all angles, interior, dashboard, and trunk</li>
-          <li>• Avoid blurry or dark photos</li>
+          <li>• {t('vendor.takePhotosGoodLighting')}</li>
+          <li>• {t('vendor.cleanCarBefore')}</li>
+          <li>• {t('vendor.includeAllAngles')}</li>
+          <li>• {t('vendor.avoidBlurryPhotos')}</li>
         </ul>
       </div>
     </CardContent>
   </Card>
-);
+  );
+};
 
 const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: Step3PricingProps) => {
+  const { t } = useLanguage();
   const addSeasonalPrice = () => {
     const newSeason: SeasonalPrice = {
       id: Date.now().toString(),
@@ -479,10 +487,10 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Euro className="h-5 w-5" />
-          Pricing & Policies
+          {t('vendor.pricingPolicies')}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Set your rental rates and policies
+          {t('vendor.setRentalRates')}
         </p>
       </CardHeader>
       <CardContent className="space-y-8">
@@ -490,11 +498,11 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
         <div className="space-y-4">
           <h4 className="font-medium flex items-center gap-2">
             <DollarSign className="h-4 w-4" />
-            Base Pricing
+            {t('vendor.basePricing')}
           </h4>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="basePrice">Daily Rate (€) *</Label>
+              <Label htmlFor="basePrice">{t('vendor.dailyRate')} *</Label>
               <Input 
                 id="basePrice"
                 type="number"
@@ -503,11 +511,11 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                 placeholder="45"
               />
               <p className="text-xs text-muted-foreground">
-                Competitive rates: €25-150/day
+                {t('vendor.competitiveRates')}
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="weeklyDiscount">Weekly Discount (%)</Label>
+              <Label htmlFor="weeklyDiscount">{t('vendor.weeklyDiscount')}</Label>
               <Input 
                 id="weeklyDiscount"
                 type="number"
@@ -517,7 +525,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="monthlyDiscount">Monthly Discount (%)</Label>
+              <Label htmlFor="monthlyDiscount">{t('vendor.monthlyDiscount')}</Label>
               <Input 
                 id="monthlyDiscount"
                 type="number"
@@ -534,7 +542,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
           <div className="flex items-center justify-between">
             <h4 className="font-medium flex items-center gap-2">
               <CalendarIcon className="h-4 w-4" />
-              Seasonal Pricing
+              {t('vendor.seasonalPricing')}
             </h4>
             <Switch 
               checked={formData.seasonalPricingEnabled}
@@ -547,9 +555,9 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
               {/* Seasonal Pricing Configuration */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">Configure different rates for peak seasons, holidays, and special events</p>
+                  <p className="text-sm text-muted-foreground">{t('vendor.configureDifferentRates')}</p>
                   <Button onClick={addSeasonalPrice} variant="outline" size="sm">
-                    Add Season
+                    {t('vendor.addSeason')}
                   </Button>
                 </div>
                 
@@ -559,7 +567,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <Input
-                            placeholder="Season name (e.g., Summer 2024)"
+                            placeholder={t('vendor.seasonName')}
                             value={season.name}
                             onChange={(e) => updateSeasonalPrice(season.id, 'name', e.target.value)}
                             className="flex-1 mr-2"
@@ -575,7 +583,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                         
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
-                            <Label>Start Date</Label>
+                            <Label>{t('vendor.startDate')}</Label>
                             <Input
                               type="date"
                               value={season.startDate.toISOString().split('T')[0]}
@@ -583,7 +591,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label>End Date</Label>
+                            <Label>{t('vendor.endDate')}</Label>
                             <Input
                               type="date"
                               value={season.endDate.toISOString().split('T')[0]}
@@ -594,7 +602,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                         
                         <div className="grid grid-cols-2 gap-3">
                           <div className="space-y-2">
-                            <Label>Daily Rate (€)</Label>
+                            <Label>{t('vendor.dailyRate')}</Label>
                             <Input
                               type="number"
                               value={season.price}
@@ -603,7 +611,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label>Season Type</Label>
+                            <Label>{t('vendor.seasonType')}</Label>
                             <Select 
                               value={season.type} 
                               onValueChange={(value: 'peak' | 'off' | 'standard') => updateSeasonalPrice(season.id, 'type', value)}
@@ -612,9 +620,9 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="standard">Standard</SelectItem>
-                                <SelectItem value="peak">Peak Season</SelectItem>
-                                <SelectItem value="off">Off Season</SelectItem>
+                                <SelectItem value="standard">{t('vendor.standard')}</SelectItem>
+                                <SelectItem value="peak">{t('vendor.peakSeason')}</SelectItem>
+                                <SelectItem value="off">{t('vendor.offSeason')}</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
@@ -627,7 +635,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
 
               {/* Calendar Preview */}
               <div className="space-y-4">
-                <h5 className="font-medium">Price Calendar Preview</h5>
+                <h5 className="font-medium">{t('vendor.priceCalendarPreview')}</h5>
                 <div className="border rounded-lg p-4">
                   <AirbnbDatePicker
                     startDate={undefined}
@@ -637,24 +645,24 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                     }}
                     disabledDates={[]}
                     minDate={new Date()}
-                    placeholder="Select date to preview pricing"
+                    placeholder={t('vendor.selectDatePreview')}
                     className="w-full"
                   />
                   
                   <div className="mt-4 space-y-2">
-                    <h6 className="font-medium text-sm">Legend:</h6>
+                    <h6 className="font-medium text-sm">{t('vendor.legend')}</h6>
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-red-100 border border-red-200 rounded"></div>
-                        <span>Peak Season</span>
+                        <span>{t('vendor.peakSeason')}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
-                        <span>Off Season</span>
+                        <span>{t('vendor.offSeason')}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
-                        <span>Standard</span>
+                        <span>{t('vendor.standard')}</span>
                       </div>
                     </div>
                     
@@ -672,10 +680,10 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
 
         {/* Additional Fees */}
         <div className="space-y-4">
-          <h4 className="font-medium">Additional Fees (Optional)</h4>
+          <h4 className="font-medium">{t('vendor.additionalFees')}</h4>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="extraDriverFee">Extra Driver Fee (€)</Label>
+              <Label htmlFor="extraDriverFee">{t('vendor.extraDriverFee')}</Label>
               <Input 
                 id="extraDriverFee"
                 type="number"
@@ -685,7 +693,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="airportDeliveryFee">Airport Delivery (€)</Label>
+              <Label htmlFor="airportDeliveryFee">{t('vendor.airportDelivery')}</Label>
               <Input 
                 id="airportDeliveryFee"
                 type="number"
@@ -695,7 +703,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="childSeatFee">Child Seat Fee (€/day)</Label>
+              <Label htmlFor="childSeatFee">{t('vendor.childSeatFee')}</Label>
               <Input 
                 id="childSeatFee"
                 type="number"
@@ -711,18 +719,18 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
         <div className="space-y-4">
           <h4 className="font-medium flex items-center gap-2">
             <Shield className="h-4 w-4" />
-            Security Deposit
+            {t('vendor.securityDeposit')}
           </h4>
           <div className="flex items-center space-x-4">
             <Switch 
               checked={formData.depositRequired}
               onCheckedChange={(checked) => updateField('depositRequired', checked)}
             />
-            <Label>Require security deposit</Label>
+            <Label>{t('vendor.requireSecurityDeposit')}</Label>
           </div>
           {formData.depositRequired && (
             <div className="space-y-2 max-w-xs">
-              <Label htmlFor="depositAmount">Deposit Amount (€)</Label>
+              <Label htmlFor="depositAmount">{t('vendor.depositAmount')}</Label>
               <Input 
                 id="depositAmount"
                 type="number"
@@ -736,31 +744,31 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
 
         {/* Policies */}
         <div className="space-y-4">
-          <h4 className="font-medium">Rental Policies</h4>
+          <h4 className="font-medium">{t('vendor.rentalPolicies')}</h4>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="fuelPolicy">Fuel Policy</Label>
+              <Label htmlFor="fuelPolicy">{t('vendor.fuelPolicy')}</Label>
               <Select value={formData.fuelPolicy} onValueChange={(value) => updateField('fuelPolicy', value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="same">Return with same fuel level</SelectItem>
-                  <SelectItem value="full">Return full tank</SelectItem>
-                  <SelectItem value="prepaid">Pre-paid fuel</SelectItem>
+                  <SelectItem value="same">{t('vendor.returnSameFuel')}</SelectItem>
+                  <SelectItem value="full">{t('vendor.returnFullTank')}</SelectItem>
+                  <SelectItem value="prepaid">{t('vendor.prepaidFuel')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="cancellationPolicy">Cancellation Policy</Label>
+              <Label htmlFor="cancellationPolicy">{t('vendor.cancellationPolicy')}</Label>
               <Select value={formData.cancellationPolicy} onValueChange={(value) => updateField('cancellationPolicy', value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="flexible">Flexible (free cancellation 24h before)</SelectItem>
-                  <SelectItem value="moderate">Moderate (free cancellation 48h before)</SelectItem>
-                  <SelectItem value="strict">Strict (free cancellation 7 days before)</SelectItem>
+                  <SelectItem value="flexible">{t('vendor.flexibleCancellation')}</SelectItem>
+                  <SelectItem value="moderate">{t('vendor.moderateCancellation')}</SelectItem>
+                  <SelectItem value="strict">{t('vendor.strictCancellation')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -768,7 +776,7 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
           
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="mileageLimit">Daily Mileage Limit (km)</Label>
+              <Label htmlFor="mileageLimit">{t('vendor.dailyMileageLimit')}</Label>
               <Input 
                 id="mileageLimit"
                 type="number"
@@ -776,10 +784,10 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
                 onChange={(e) => updateField('mileageLimit', e.target.value)}
                 placeholder="300"
               />
-              <p className="text-xs text-muted-foreground">Leave empty for unlimited</p>
+              <p className="text-xs text-muted-foreground">{t('vendor.leaveEmptyUnlimited')}</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="overageFee">Overage Fee (€/km)</Label>
+              <Label htmlFor="overageFee">{t('vendor.overageFee')}</Label>
               <Input 
                 id="overageFee"
                 type="number"
@@ -798,20 +806,20 @@ const Step3Pricing = ({ formData, updateField, selectedDate, setSelectedDate }: 
 
 const Step4Availability = ({ formData, updateField, t }: Step4AvailabilityProps) => (
   <Card className="max-w-4xl mx-auto">
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2">
-        <CalendarIcon className="h-5 w-5" />
-        Availability Settings
-      </CardTitle>
-      <p className="text-sm text-muted-foreground">
-        Set when your car is available for rent
-      </p>
-    </CardHeader>
-    <CardContent className="space-y-6">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <CalendarIcon className="h-5 w-5" />
+          {t('vendor.availabilitySettings')}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          {t('vendor.setWhenAvailable')}
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-6">
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          {t('keepCalendarUpdated')}
+          {t('vendor.keepCalendarUpdated')}
         </AlertDescription>
       </Alert>
 
@@ -820,14 +828,14 @@ const Step4Availability = ({ formData, updateField, t }: Step4AvailabilityProps)
           checked={formData.alwaysAvailable}
           onCheckedChange={(checked) => updateField('alwaysAvailable', checked)}
         />
-        <Label>Always available (can be booked anytime)</Label>
+        <Label>{t('vendor.alwaysAvailable')}</Label>
       </div>
 
       {!formData.alwaysAvailable && (
         <div className="space-y-4">
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex-1">
-              <h4 className="font-medium mb-3">Select dates to block or set special pricing</h4>
+              <h4 className="font-medium mb-3">{t('vendor.selectDatesBlock')}</h4>
               <div className="space-y-4">
                 <AirbnbDatePicker
                   startDate={formData.selectedStartDate || undefined}
@@ -838,7 +846,7 @@ const Step4Availability = ({ formData, updateField, t }: Step4AvailabilityProps)
                   }}
                   disabledDates={formData.blockedDates}
                   minDate={new Date()}
-                  placeholder="Select dates to block"
+                  placeholder={t('vendor.selectDatesToBlock')}
                   className="w-full"
                 />
                 
@@ -863,7 +871,7 @@ const Step4Availability = ({ formData, updateField, t }: Step4AvailabilityProps)
                         updateField('selectedEndDate', null);
                       }}
                     >
-                      Block Selected Dates
+                      {t('vendor.blockSelectedDates')}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -873,7 +881,7 @@ const Step4Availability = ({ formData, updateField, t }: Step4AvailabilityProps)
                         updateField('selectedEndDate', null);
                       }}
                     >
-                      Clear Selection
+                      {t('vendor.clearSelection')}
                     </Button>
                   </div>
                 )}
@@ -883,44 +891,44 @@ const Step4Availability = ({ formData, updateField, t }: Step4AvailabilityProps)
             <div className="flex-1 space-y-4">
               <Card>
                 <CardHeader className="pb-3">
-                  <h4 className="font-medium">Quick Actions</h4>
+                  <h4 className="font-medium">{t('vendor.quickActions')}</h4>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <Button variant="outline" size="sm" className="w-full justify-start">
-                    Block selected date
+                    {t('vendor.blockSelectedDate')}
                   </Button>
                   <Button variant="outline" size="sm" className="w-full justify-start">
-                    Set special price
+                    {t('vendor.setSpecialPrice')}
                   </Button>
                   <Button variant="outline" size="sm" className="w-full justify-start">
-                    Block all weekends (next 3 months)
+                    {t('vendor.blockAllWeekends')}
                   </Button>
                   <Button variant="outline" size="sm" className="w-full justify-start">
-                    Set summer pricing (June-August)
+                    {t('vendor.setSummerPricing')}
                   </Button>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader className="pb-3">
-                  <h4 className="font-medium">Calendar Legend</h4>
+                  <h4 className="font-medium">{t('vendor.calendarLegend')}</h4>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-4 h-4 bg-success rounded"></div>
-                    Available
+                    {t('vendor.available')}
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-4 h-4 bg-destructive rounded"></div>
-                    Booked
+                    {t('vendor.booked')}
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-4 h-4 bg-muted border rounded"></div>
-                    Blocked by you
+                    {t('vendor.blockedByYou')}
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-4 h-4 bg-primary rounded"></div>
-                    Special price
+                    {t('vendor.specialPrice')}
                   </div>
                 </CardContent>
               </Card>
@@ -980,10 +988,10 @@ export const AddCarWizard = () => {
   });
 
   const steps = [
-    { id: 1, title: "Basics", icon: Car },
-    { id: 2, title: "Photos", icon: Camera },
-    { id: 3, title: "Pricing & Policies", icon: Euro },
-    { id: 4, title: "Availability", icon: CalendarIcon }
+    { id: 1, title: t('vendor.basics'), icon: Car },
+    { id: 2, title: t('vendor.photos'), icon: Camera },
+    { id: 3, title: t('vendor.pricingPoliciesShort'), icon: Euro },
+    { id: 4, title: t('vendor.availability'), icon: CalendarIcon }
   ];
 
   // Update field - simple state update
@@ -1041,12 +1049,12 @@ export const AddCarWizard = () => {
       
       // Validate required fields
       if (!formData.makeId) {
-        alert('Please select a car make.');
+        alert(t('vendor.pleaseSelectCarMake'));
         setIsPublishing(false);
         return;
       }
       if (!formData.model || !formData.year || !formData.transmission || !formData.fuel) {
-        alert('Please fill in all required fields.');
+        alert(t('vendor.pleaseFillRequiredFields'));
         setIsPublishing(false);
         return;
       }
@@ -1099,13 +1107,13 @@ export const AddCarWizard = () => {
         <div className="flex items-center justify-center gap-4">
           <Button variant="ghost" size="sm" onClick={() => router.push('/vendor/cars')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Cars
+            {t('vendor.backToCars')}
           </Button>
-          <h1 className="text-3xl font-bold text-foreground">Add New Car</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t('vendor.addNewCar')}</h1>
           <div className="w-20"></div> {/* Spacer for centering */}
         </div>
         <p className="text-muted-foreground">
-          Follow these steps to create your car listing
+          {t('vendor.followSteps')}
         </p>
       </div>
 
@@ -1148,8 +1156,7 @@ export const AddCarWizard = () => {
           <div className="flex gap-2 w-full sm:w-auto">
             <Button variant="outline" onClick={saveAndExit} className="gap-2 flex-1 sm:flex-none">
               <Save className="h-4 w-4" />
-              <span className="hidden sm:inline">{t('saveExit')}</span>
-              <span className="sm:hidden">Save</span>
+              <span>{t('vendor.saveExit')}</span>
             </Button>
           </div>
           
@@ -1157,14 +1164,12 @@ export const AddCarWizard = () => {
             {currentStep > 1 && (
               <Button variant="outline" onClick={prevStep} className="gap-2 flex-1 sm:flex-none">
                 <ArrowLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">{t('back')}</span>
-                <span className="sm:hidden">Back</span>
+                <span>{t('vendor.back')}</span>
               </Button>
             )}
             {currentStep < 4 ? (
               <Button variant="hero" onClick={nextStep} className="gap-2 flex-1 sm:flex-none">
-                <span className="hidden sm:inline">{t('next')}</span>
-                <span className="sm:hidden">Next</span>
+                <span>{t('vendor.next')}</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
@@ -1177,13 +1182,11 @@ export const AddCarWizard = () => {
                 {isPublishing ? (
                   <>
                     <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                    <span className="hidden sm:inline">Publishing...</span>
-                    <span className="sm:hidden">Publishing...</span>
+                    <span>{t('vendor.publishing')}</span>
                   </>
                 ) : (
                   <>
-                    <span className="hidden sm:inline">{t('publishListing')}</span>
-                    <span className="sm:hidden">Publish</span>
+                    <span>{t('vendor.publishListing')}</span>
                     <Check className="h-4 w-4" />
                   </>
                 )}

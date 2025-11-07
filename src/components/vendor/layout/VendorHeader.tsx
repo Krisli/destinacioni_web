@@ -3,16 +3,17 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Bell, Search, User, LogOut, Settings } from 'lucide-react';
+import { Search, LogOut, Settings, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { useLanguage } from '@/shared/components/LanguageProvider';
 
 export const VendorHeader = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { user, logout } = useAuth();
-  const { t } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <header className="bg-white border-b border-border h-16 flex items-center justify-between px-4 sm:px-6">
@@ -45,13 +46,17 @@ export const VendorHeader = () => {
 
       {/* Right side actions */}
       <div className="flex items-center space-x-2 sm:space-x-4">
-        {/* Notifications */}
-        <Button variant="ghost" size="sm" className="relative">
-          <Bell className="h-4 w-4" />
-          <span className="absolute -top-1 -right-1 h-3 w-3 bg-primary rounded-full text-xs text-primary-foreground flex items-center justify-center">
-            3
-          </span>
-        </Button>
+        {/* Language Selector */}
+        <Select value={language} onValueChange={(value) => setLanguage(value as 'en' | 'al')}>
+          <SelectTrigger className="w-[120px] h-9">
+            <Globe className="h-4 w-4 mr-2" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="en">English</SelectItem>
+            <SelectItem value="al">Shqip</SelectItem>
+          </SelectContent>
+        </Select>
 
         {/* Settings - Hidden on mobile */}
         <Button variant="ghost" size="sm" className="hidden sm:flex">
