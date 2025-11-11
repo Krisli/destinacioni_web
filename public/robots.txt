@@ -1,0 +1,19 @@
+# robots.txt for Destinacioni
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Disallow admin and vendor areas from being indexed
+Disallow: /admin/
+Disallow: /vendor/
+Disallow: /api/
+
+# Allow public pages
+Allow: /
+Allow: /cars
+Allow: /apartments
+
+# Sitemap location
+Sitemap: https://www.destinacioni.com/sitemap.xml
+
