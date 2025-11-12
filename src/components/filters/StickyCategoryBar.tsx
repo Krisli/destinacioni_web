@@ -1,39 +1,43 @@
 'use client'
 
-import { Car, Home, Plane, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Car, Truck, Crown, Wind } from 'lucide-react';
 import { useLanguage } from '@/shared/components/LanguageProvider';
+import { cn } from '@/lib/utils';
 
-export const CategoryBar = () => {
+export const StickyCategoryBar = () => {
   const { t } = useLanguage();
 
   const categories = [
-    { id: 'cars', label: t('carsTitle'), icon: Car, active: true },
-    { id: 'apartments', label: t('apartments'), icon: Home, active: false },
-    { id: 'flights', label: 'Flights', icon: Plane, active: false },
-    { id: 'destinations', label: t('popularDestinations'), icon: MapPin, active: false },
+    { id: 'economy', label: t('economy') + ' class', icon: Car, count: 348 },
+    { id: 'standard', label: t('standard'), icon: Car, count: 335 },
+    { id: 'suv', label: t('suv'), icon: Truck, count: 184 },
+    { id: 'luxury', label: t('luxury'), icon: Crown, count: 34 },
+    { id: 'convertibles', label: t('convertibles'), icon: Wind, count: 5 },
+    { id: 'van', label: t('vanMinivan'), icon: Truck, count: 86 },
   ];
 
   return (
-    <div className="bg-white border-b">
+    <div className="sticky top-0 z-40 bg-white border-b shadow-sm">
       <div className="container mx-auto px-4 lg:px-6">
-        <div className="flex items-center space-x-1 py-3 overflow-x-auto">
+        <div className="flex items-center space-x-3 py-4 overflow-x-auto">
           {categories.map((category) => {
             const Icon = category.icon;
             return (
-              <Button
+              <div
                 key={category.id}
-                variant={category.active ? 'default' : 'ghost'}
-                size="sm"
-                className={`flex items-center space-x-2 whitespace-nowrap ${
-                  category.active 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
+                className={cn(
+                  "flex-shrink-0 relative bg-muted rounded-lg p-2 min-w-[140px] cursor-pointer hover:bg-muted/80 transition-colors",
+                  "flex flex-col items-center justify-center gap-2"
+                )}
               >
-                <Icon className="h-4 w-4" />
-                <span>{category.label}</span>
-              </Button>
+                <Icon className="h-8 w-8 text-foreground" />
+                <span className="text-sm font-medium text-foreground text-center">
+                  {category.label}
+                </span>
+                <span className="absolute bottom-2 right-2 bg-background text-muted-foreground text-xs font-medium px-2 py-0.5 rounded-full">
+                  {category.count}
+                </span>
+              </div>
             );
           })}
         </div>

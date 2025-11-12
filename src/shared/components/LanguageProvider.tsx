@@ -71,6 +71,7 @@ const translations = {
     compact: 'Compact',
     vanMinivan: 'Van/Minivan',
     luxury: 'Luxury',
+    convertibles: 'Convertibles',
     electric: 'Electric',
     // New keys for screenshot design
     rentCarsHotelsVillas: 'Rent Cars Hotels & Villas',
@@ -128,6 +129,8 @@ const translations = {
       title: 'Finding Your Perfect Car',
       subtitle: 'Searching through our fleet...',
     },
+    scrollToLoadMore: 'Scroll to load more',
+    allCarsLoaded: 'All cars loaded',
     cars: {
       foundCars: 'Found',
       carsText: 'cars',
@@ -411,6 +414,7 @@ const translations = {
     compact: 'Kompakt',
     vanMinivan: 'Furgon/Minivan',
     luxury: 'Luksoz',
+    convertibles: 'Kabriolet',
     electric: 'Elektrik',
     // New keys for screenshot design
     rentCarsHotelsVillas: 'Qira Makinash Hotele & Vila',
@@ -469,6 +473,8 @@ const translations = {
       title: 'Duke Gjetur Makinën Tënde Të Përsosur',
       subtitle: 'Duke kërkuar në flotën tonë...',
     },
+    scrollToLoadMore: 'Lëviz për të ngarkuar më shumë',
+    allCarsLoaded: 'Të gjitha makinat u ngarkuan',
     cars: {
       foundCars: 'U gjetën',
       carsText: 'makina',

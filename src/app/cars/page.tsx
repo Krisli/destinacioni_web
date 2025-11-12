@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from "react";
-import { Grid, List, Users, Luggage, Fuel, Settings, MapPin, Star, Map } from "lucide-react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Grid, List, Users, Luggage, Fuel, Settings, MapPin, Star, Map, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -33,6 +33,10 @@ const CarListingsContent = () => {
   const [showMap, setShowMap] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState<LoadingPhase>('splash');
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [displayedCars, setDisplayedCars] = useState<typeof mockCars>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const observerTarget = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { t } = useLanguage();
 
@@ -224,6 +228,132 @@ const CarListingsContent = () => {
       unlimitedMileage: true,
       freeCancellation: false,
       instantConfirmation: true
+    },
+    {
+      id: 7,
+      make: "Audi",
+      model: "A4",
+      year: 2021,
+      image: bmwSedanImage,
+      price: 95,
+      location: "Shkodër",
+      rating: 4.7,
+      reviews: 15,
+      seats: 5,
+      luggage: 3,
+      transmission: "Automatic",
+      fuel: "Diesel",
+      available: true,
+      features: ["AC", "Leather", "Navigation", "Premium Audio"],
+      supplier: "enterprise",
+      unlimitedMileage: true,
+      freeCancellation: false,
+      instantConfirmation: true
+    },
+    {
+      id: 8,
+      make: "Audi",
+      model: "A4",
+      year: 2021,
+      image: bmwSedanImage,
+      price: 95,
+      location: "Shkodër",
+      rating: 4.7,
+      reviews: 15,
+      seats: 5,
+      luggage: 3,
+      transmission: "Automatic",
+      fuel: "Diesel",
+      available: true,
+      features: ["AC", "Leather", "Navigation", "Premium Audio"],
+      supplier: "enterprise",
+      unlimitedMileage: true,
+      freeCancellation: false,
+      instantConfirmation: true
+    },
+    {
+      id: 6,
+      make: "Audi",
+      model: "A4",
+      year: 2021,
+      image: bmwSedanImage,
+      price: 95,
+      location: "Shkodër",
+      rating: 4.7,
+      reviews: 15,
+      seats: 5,
+      luggage: 3,
+      transmission: "Automatic",
+      fuel: "Diesel",
+      available: true,
+      features: ["AC", "Leather", "Navigation", "Premium Audio"],
+      supplier: "enterprise",
+      unlimitedMileage: true,
+      freeCancellation: false,
+      instantConfirmation: true
+    },
+    {
+      id: 6,
+      make: "Audi",
+      model: "A4",
+      year: 2021,
+      image: bmwSedanImage,
+      price: 95,
+      location: "Shkodër",
+      rating: 4.7,
+      reviews: 15,
+      seats: 5,
+      luggage: 3,
+      transmission: "Automatic",
+      fuel: "Diesel",
+      available: true,
+      features: ["AC", "Leather", "Navigation", "Premium Audio"],
+      supplier: "enterprise",
+      unlimitedMileage: true,
+      freeCancellation: false,
+      instantConfirmation: true
+    },
+    {
+      id: 6,
+      make: "Audi",
+      model: "A4",
+      year: 2021,
+      image: bmwSedanImage,
+      price: 95,
+      location: "Shkodër",
+      rating: 4.7,
+      reviews: 15,
+      seats: 5,
+      luggage: 3,
+      transmission: "Automatic",
+      fuel: "Diesel",
+      available: true,
+      features: ["AC", "Leather", "Navigation", "Premium Audio"],
+      supplier: "enterprise",
+      unlimitedMileage: true,
+      freeCancellation: false,
+      instantConfirmation: true
+    },
+    {
+      id: 6,
+      make: "Audi",
+      model: "A4",
+      year: 2021,
+      image: bmwSedanImage,
+      price: 95,
+      location: "Shkodër",
+      rating: 4.7,
+      reviews: 15,
+      seats: 5,
+      luggage: 3,
+      transmission: "Automatic",
+      fuel: "Diesel",
+      available: true,
+      features: ["AC", "Leather", "Navigation", "Premium Audio"],
+      supplier: "enterprise",
+      unlimitedMileage: true,
+      freeCancellation: false,
+      instantConfirmation: true
     }
   ];
 
@@ -289,8 +419,74 @@ const CarListingsContent = () => {
     }
   });
 
-  const cars = sortedCars;
+  const allCars = sortedCars;
   const daysCount = getDaysCount();
+
+  // Items per page for infinite scroll
+  const ITEMS_PER_PAGE = 9;
+
+  // Load initial cars
+  useEffect(() => {
+    if (loadingPhase === 'idle' && allCars.length > 0) {
+      const initialCars = allCars.slice(0, ITEMS_PER_PAGE);
+      setDisplayedCars(initialCars);
+      setHasMore(allCars.length > ITEMS_PER_PAGE);
+    }
+  }, [loadingPhase, allCars.length]);
+
+  // Reset displayed cars when filters change
+  useEffect(() => {
+    if (!isInitialLoad && loadingPhase === 'idle') {
+      const initialCars = allCars.slice(0, ITEMS_PER_PAGE);
+      setDisplayedCars(initialCars);
+      setHasMore(allCars.length > ITEMS_PER_PAGE);
+    }
+  }, [filters.carType, filters.transmission, filters.fuelType, filters.sortBy, filters.priceRange, filters.suppliers, filters.quickFilters, filters.location]);
+
+  // Load more cars function
+  const loadMoreCars = useCallback(() => {
+    if (isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+    
+    // Simulate API delay
+    setTimeout(() => {
+      const currentCount = displayedCars.length;
+      const nextCars = allCars.slice(currentCount, currentCount + ITEMS_PER_PAGE);
+      
+      if (nextCars.length > 0) {
+        setDisplayedCars(prev => [...prev, ...nextCars]);
+        setHasMore(currentCount + ITEMS_PER_PAGE < allCars.length);
+      } else {
+        setHasMore(false);
+      }
+      
+      setIsLoadingMore(false);
+    }, 600);
+  }, [displayedCars.length, allCars, isLoadingMore, hasMore]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore && loadingPhase === 'idle') {
+          loadMoreCars();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const currentTarget = observerTarget.current;
+    if (currentTarget) {
+      observer.observe(currentTarget);
+    }
+
+    return () => {
+      if (currentTarget) {
+        observer.unobserve(currentTarget);
+      }
+    };
+  }, [hasMore, isLoadingMore, loadMoreCars, loadingPhase]);
 
   const CarCard = ({ car }: { car: typeof mockCars[0] }) => {
     const totalPrice = calculateTotalPrice(car.price);
@@ -419,7 +615,7 @@ const CarListingsContent = () => {
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="text-sm text-muted-foreground">
-              {t("cars.foundCars")} {cars.length} {t("cars.carsText")}
+              {t("cars.foundCars")} {allCars.length} {t("cars.carsText")}
             </div>
             
             <div className="flex items-center gap-3">
@@ -480,34 +676,41 @@ const CarListingsContent = () => {
           {/* Car Grid, Skeleton or Empty State */}
           {loadingPhase === 'skeleton' ? (
             <SkeletonGrid count={9} />
-          ) : cars.length === 0 ? (
+          ) : allCars.length === 0 ? (
             <div className="py-12">
               <EmptyState />
             </div>
           ) : (
-            <div 
-              className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'} transition-opacity duration-300`}
-              style={{ opacity: loadingPhase === 'idle' ? 1 : 0 }}
-            >
-              {cars.map((car) => (
-                <CarCard key={car.id} car={car} />
-              ))}
-            </div>
-          )}
+            <>
+              <div 
+                className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'} transition-opacity duration-300`}
+                style={{ opacity: loadingPhase === 'idle' ? 1 : 0 }}
+              >
+                {displayedCars.map((car) => (
+                  <CarCard key={car.id} car={car} />
+                ))}
+              </div>
 
-          {/* Pagination */}
-          {cars.length > 0 && (
-            <div className="flex justify-center items-center space-x-2 mt-12">
-              <Button variant="outline" size="sm">
-                {t("previous")}
-              </Button>
-              <Button variant="default" size="sm">1</Button>
-              <Button variant="outline" size="sm">2</Button>
-              <Button variant="outline" size="sm">3</Button>
-              <Button variant="outline" size="sm">
-                {t("next")}
-              </Button>
-            </div>
+              {/* Infinite Scroll Trigger & Loading Indicator */}
+              {loadingPhase === 'idle' && (
+                <div ref={observerTarget} className="mt-8 flex justify-center items-center py-8">
+                  {isLoadingMore ? (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <span className="text-sm">{t("loading.subtitle")}</span>
+                    </div>
+                  ) : hasMore ? (
+                    <div className="text-sm text-muted-foreground">
+                      {t("scrollToLoadMore")}
+                    </div>
+                  ) : displayedCars.length > 0 ? (
+                    <div className="text-sm text-muted-foreground">
+                      {t("allCarsLoaded")}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </>
           )}
         </div>
         
