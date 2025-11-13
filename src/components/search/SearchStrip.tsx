@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { Search, Calendar, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/shared/components/LanguageProvider';
 import { useFilters } from '@/contexts/EnhancedFilterContext';

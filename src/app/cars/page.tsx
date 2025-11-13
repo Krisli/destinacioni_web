@@ -18,6 +18,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useLanguage } from "@/shared/components/LanguageProvider";
 import { SplashLoader } from "@/components/ui/SplashLoader";
 import { SkeletonGrid } from "@/components/cars/SkeletonGrid";
+import { BookingModal } from "@/components/booking/BookingModal";
+import { BookingLoader } from "@/components/booking/BookingLoader";
 
 // Car images from Unsplash
 const vwGolfImage = "https://images.unsplash.com/photo-1549317336-206569e8475c?w=400&h=300&fit=crop&crop=center";
@@ -39,6 +41,9 @@ const CarListingsContent = () => {
   const observerTarget = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { t } = useLanguage();
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [selectedCar, setSelectedCar] = useState<typeof mockCars[0] | null>(null);
+  const [isLoadingBooking, setIsLoadingBooking] = useState(false);
 
   // Simulate data fetching with loading phases
   useEffect(() => {
@@ -488,6 +493,17 @@ const CarListingsContent = () => {
     };
   }, [hasMore, isLoadingMore, loadMoreCars, loadingPhase]);
 
+  const handleBookNow = async (car: typeof mockCars[0]) => {
+    setIsLoadingBooking(true);
+    setSelectedCar(car);
+    
+    // Simulate loading delay (e.g., fetching car details)
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    setIsLoadingBooking(false);
+    setBookingModalOpen(true);
+  };
+
   const CarCard = ({ car }: { car: typeof mockCars[0] }) => {
     const totalPrice = calculateTotalPrice(car.price);
     const hasDates = filters.pickupDate && filters.dropoffDate;
@@ -576,7 +592,8 @@ const CarListingsContent = () => {
         <Button 
           variant={car.available ? "hero" : "secondary"} 
           className="flex-1"
-          disabled={!car.available}
+          disabled={!car.available || isLoadingBooking}
+          onClick={() => car.available && handleBookNow(car)}
         >
           {car.available ? t("bookNow") : t("unavailable")}
         </Button>
@@ -601,6 +618,27 @@ const CarListingsContent = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <BookingLoader visible={isLoadingBooking} />
+      <BookingModal 
+        open={bookingModalOpen} 
+        onOpenChange={setBookingModalOpen}
+        car={selectedCar ? {
+          id: String(selectedCar.id),
+          make: selectedCar.make,
+          model: selectedCar.model,
+          year: selectedCar.year,
+          image: selectedCar.image,
+          price: selectedCar.price,
+          transmission: selectedCar.transmission,
+          fuel: selectedCar.fuel,
+          seats: selectedCar.seats,
+          luggage: String(selectedCar.luggage),
+          location: selectedCar.location,
+          rating: selectedCar.rating,
+          reviews: selectedCar.reviews,
+          available: selectedCar.available,
+        } : null}
+      />
       <ModernHeader />
       
       {/* Add top padding to account for fixed header */}
