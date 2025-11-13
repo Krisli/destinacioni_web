@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'destination-prod-bucket-061447956198.s3.eu-central-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };

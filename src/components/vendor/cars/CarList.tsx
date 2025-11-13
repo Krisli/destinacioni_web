@@ -31,7 +31,8 @@ interface Booking {
 
 interface Car {
   id: string; // Changed from number to string to match API
-  photo: string;
+  photo: string; // Will be populated from images[0]?.url
+  images: Array<{ id: string; url: string; contentType: string; sizeBytes: number }>; // Images from API
   make: string;
   model: string;
   year: number;
@@ -65,7 +66,8 @@ export const CarList = () => {
         // Map API response to component's Car interface
         const mappedCars: Car[] = carResponses.map((carResponse: CarResponse) => ({
           id: carResponse.id,
-          photo: "", // Photo not in API response yet
+          photo: carResponse.images[0]?.url || "", // Use first image as thumbnail
+          images: carResponse.images || [], // Store all images
           make: carResponse.makeName,
           model: carResponse.model,
           year: carResponse.year,

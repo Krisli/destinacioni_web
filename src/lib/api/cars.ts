@@ -46,6 +46,16 @@ export interface CarMake {
 }
 
 /**
+ * Car image from API
+ */
+export interface CarImage {
+  id: string;
+  url: string;
+  contentType: string;
+  sizeBytes: number;
+}
+
+/**
  * Car response from GET /cars endpoint
  * Matches the .NET API response structure
  */
@@ -65,6 +75,7 @@ export interface CarResponse {
   color: string;
   licensePlate: string;
   vin: string;
+  images: CarImage[];
 }
 
 /**

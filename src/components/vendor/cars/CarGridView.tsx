@@ -33,7 +33,8 @@ interface Booking {
 
 interface Car {
   id: string;
-  photo: string;
+  photo: string; // Will be populated from images[0]?.url
+  images: Array<{ id: string; url: string; contentType: string; sizeBytes: number }>; // Images from API
   make: string;
   model: string;
   year: number;
@@ -109,7 +110,7 @@ export const CarGridView = ({ cars, selectedCars, onSelectCar }: CarGridViewProp
               onCheckedChange={(checked) => onSelectCar(car.id, checked as boolean)}
             />
             <Image 
-              src={car.photo} 
+              src={car.images[0]?.url || car.photo || '/placeholder-car.jpg'} 
               alt={`${car.make} ${car.model}`}
               width={64}
               height={48}

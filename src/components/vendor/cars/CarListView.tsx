@@ -34,7 +34,8 @@ interface Booking {
 
 interface Car {
   id: string;
-  photo: string;
+  photo: string; // Will be populated from images[0]?.url
+  images: Array<{ id: string; url: string; contentType: string; sizeBytes: number }>; // Images from API
   make: string;
   model: string;
   year: number;
@@ -133,7 +134,7 @@ export const CarListView = ({ cars, selectedCars, onSelectAll, onSelectCar }: Ca
               <TableCell>
                 <div className="flex items-center space-x-3">
                   <Image 
-                    src={car.photo} 
+                    src={car.images[0]?.url || car.photo || '/placeholder-car.jpg'} 
                     alt={`${car.make} ${car.model}`}
                     width={48}
                     height={36}
