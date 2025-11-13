@@ -147,19 +147,6 @@ export const SearchStrip = () => {
                 </Button>
               </div>
             </div>
-
-            {/* Search Button */}
-            <div className="lg:ml-4 mt-2 lg:mt-2">
-              <Button 
-                className="bg-white hover:bg-white/90 text-primary w-full lg:w-auto h-12 px-8 font-semibold"
-                onClick={() => {
-                  // Trigger search - you can add search logic here
-                }}
-              >
-                <Search className="h-4 w-4 mr-2" />
-                {t('searchButton') || 'SEARCH'}
-              </Button>
-            </div>
           </div>
         </div>
       </div>
