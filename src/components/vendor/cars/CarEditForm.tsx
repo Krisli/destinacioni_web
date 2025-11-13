@@ -2,15 +2,20 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { SearchableCarMakeSelect } from './SearchableCarMakeSelect';
-import { ArrowLeft, Car, Save } from 'lucide-react';
+import { ArrowLeft, Car, Save, Upload, X, Camera, Trash } from 'lucide-react';
 import { useLanguage } from '@/shared/components/LanguageProvider';
-import { getCarById, updateCar, getCarMakes, CarMake, CreateCarRequest } from '@/lib/api/cars';
+import { getCarById, updateCar, getCarMakes, CarMake, CreateCarRequest, CarImage } from '@/lib/api/cars';
+import { uploadImages, deleteImage } from '@/lib/api/images';
+import { cn } from '@/lib/utils';
 
 interface EditCarFormProps {
   carId: string;
@@ -24,6 +29,14 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
   const [error, setError] = useState<string | null>(null);
   const [carMakes, setCarMakes] = useState<CarMake[]>([]);
   const [loadingMakes, setLoadingMakes] = useState(true);
+  const [existingImages, setExistingImages] = useState<CarImage[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [dragActive, setDragActive] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState<CreateCarRequest>({
     makeId: '',
@@ -56,6 +69,9 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
         // Fetch car data
         const car = await getCarById(carId);
         
+        // Store existing images
+        setExistingImages(car.images || []);
+        
         // Map API response to form data
         // Normalize enum values to lowercase to match Select component values
         setFormData({
@@ -84,8 +100,108 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
     fetchData();
   }, [carId]);
 
-      const updateField = (field: keyof CreateCarRequest, value: string | number) => {
+  // Clean up object URLs when component unmounts or new images change
+  useEffect(() => {
+    const urls = newImages.map(file => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+
+    return () => {
+      urls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [newImages]);
+
+  const updateField = (field: keyof CreateCarRequest, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleFileSelect = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    
+    const currentTotal = existingImages.length + newImages.length;
+    if (currentTotal >= 4) {
+      alert(t('vendor.maxImagesReached') || 'Maximum 4 images allowed. Please delete an existing image first.');
+      return;
+    }
+    
+    const newFiles = Array.from(files);
+    const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length !== newFiles.length) {
+      alert(t('vendor.onlyImageFilesAllowed') || 'Only image files are allowed.');
+    }
+    
+    if (imageFiles.length > 0) {
+      // Limit the number of images that can be added to not exceed 4 total
+      const remainingSlots = 4 - currentTotal;
+      const filesToAdd = imageFiles.slice(0, remainingSlots);
+      
+      if (imageFiles.length > remainingSlots) {
+        alert(t('vendor.maxImagesReached') || `Maximum 4 images allowed. Only ${remainingSlots} image(s) will be added.`);
+      }
+      
+      setNewImages(prev => [...prev, ...filesToAdd]);
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileSelect(e.target.files);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    const currentTotal = existingImages.length + newImages.length;
+    if (currentTotal >= 4) {
+      alert(t('vendor.maxImagesReached') || 'Maximum 4 images allowed. Please delete an existing image first.');
+      return;
+    }
+    
+    handleFileSelect(e.dataTransfer.files);
+  };
+
+  const removeNewImage = (index: number) => {
+    if (previewUrls[index]) {
+      URL.revokeObjectURL(previewUrls[index]);
+    }
+    setNewImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteClick = (imageId: string) => {
+    setImageToDelete(imageId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!imageToDelete) return;
+    
+    try {
+      setIsDeleting(true);
+      await deleteImage(imageToDelete);
+      // Remove from existing images
+      setExistingImages(prev => prev.filter(img => img.id !== imageToDelete));
+      setDeleteDialogOpen(false);
+      setImageToDelete(null);
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      alert(error instanceof Error ? error.message : 'Failed to delete image. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,12 +212,24 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
     try {
       // Validate required fields
       if (!formData.makeId || !formData.model || !formData.year || !formData.transmission || !formData.fuelType) {
-        alert('Please fill in all required fields.');
+        alert(t('vendor.pleaseFillRequiredFields') || 'Please fill in all required fields.');
         setLoading(false);
         return;
       }
 
+      // Step 1: Update the car
       await updateCar(carId, formData);
+      
+      // Step 2: Upload new images if any
+      if (newImages.length > 0) {
+        try {
+          await uploadImages('Car', carId, newImages);
+        } catch (imageError) {
+          console.error('Error uploading images:', imageError);
+          // Don't fail the entire operation if image upload fails
+          alert(t('vendor.carUpdatedButImageUploadFailed') || 'Car updated successfully, but image upload failed. You can add images later.');
+        }
+      }
       
       // Redirect to cars list on success
       router.push('/vendor/cars');
@@ -357,6 +485,176 @@ export const CarEditForm = ({ carId }: EditCarFormProps) => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Images Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Camera className="h-5 w-5" />
+              {t('vendor.uploadPhotos')}
+            </CardTitle>
+            <CardDescription>
+              {t('vendor.manageCarImages') || 'Manage your car images. Upload new images or delete existing ones.'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Existing Images */}
+            {existingImages.length > 0 && (
+              <div className="space-y-4">
+                <h4 className="font-medium">{t('vendor.existingImages') || 'Existing Images'} ({existingImages.length})</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {existingImages.map((image) => (
+                    <div key={image.id} className="relative aspect-square group">
+                      <Image
+                        src={image.url}
+                        alt="Car image"
+                        fill
+                        className="object-cover rounded-lg border-2 border-border"
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-smooth rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleDeleteClick(image.id);
+                          }}
+                        >
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Upload New Images */}
+            <div className="space-y-4">
+              <h4 className="font-medium">{t('vendor.uploadNewImages') || 'Upload New Images'}</h4>
+              {existingImages.length + newImages.length >= 4 ? (
+                <div className="border-2 border-dashed border-muted rounded-lg p-8 text-center bg-muted/20">
+                  <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3 opacity-50" />
+                  <h3 className="font-medium mb-2 text-sm text-muted-foreground">{t('vendor.maxImagesReached') || 'Maximum 4 images allowed'}</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {t('vendor.deleteImageToUploadMore') || 'Please delete an existing image to upload a new one.'}
+                  </p>
+                </div>
+              ) : (
+                <div
+                  className={cn(
+                    "border-2 border-dashed rounded-lg p-8 text-center transition-smooth cursor-pointer",
+                    dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  )}
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  onClick={() => {
+                    if (existingImages.length + newImages.length < 4) {
+                      fileInputRef.current?.click();
+                    }
+                  }}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileInputChange}
+                    className="hidden"
+                    disabled={existingImages.length + newImages.length >= 4}
+                  />
+                  <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                  <h3 className="font-medium mb-2 text-sm">{t('vendor.dragDropPhotos')}</h3>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    {t('vendor.clickToBrowse')}
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    type="button" 
+                    disabled={existingImages.length + newImages.length >= 4}
+                    onClick={(e) => { 
+                      e.preventDefault();
+                      e.stopPropagation(); 
+                      if (existingImages.length + newImages.length < 4) {
+                        fileInputRef.current?.click(); 
+                      }
+                    }}
+                  >
+                    {t('vendor.browseFiles')}
+                  </Button>
+                </div>
+              )}
+
+              {/* New Images Preview */}
+              {newImages.length > 0 && (
+                <div className="space-y-4">
+                  <h4 className="font-medium text-sm">{t('vendor.newImagesToUpload') || 'New Images to Upload'} ({newImages.length})</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {newImages.map((file, index) => {
+                      const previewUrl = previewUrls[index];
+                      return (
+                        <div key={index} className="relative aspect-square group">
+                          {previewUrl && (
+                            <img
+                              src={previewUrl}
+                              alt={`New image ${index + 1}`}
+                              className="w-full h-full object-cover rounded-lg border-2 border-primary"
+                            />
+                          )}
+                          <div className="absolute top-2 right-2">
+                            <Badge variant="secondary" className="bg-primary text-primary-foreground text-xs">
+                              {t('vendor.new') || 'New'}
+                            </Badge>
+                          </div>
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-smooth rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                removeNewImage(index);
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Delete Image Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('vendor.deleteImage') || 'Delete Image'}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('vendor.deleteImageConfirm') || 'Are you sure you want to delete this image? This action cannot be undone.'}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>{t('vendor.cancel')}</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? (t('vendor.deleting') || 'Deleting...') : (t('vendor.delete') || 'Delete')}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="flex justify-end gap-4">
           <Button 

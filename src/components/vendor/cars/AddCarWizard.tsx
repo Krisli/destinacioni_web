@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { 
   ArrowLeft, 
@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { SearchableCarMakeSelect } from "./SearchableCarMakeSelect";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/card";
 import { Switch } from "@/components/ui/switch";
@@ -368,8 +369,82 @@ const Step1Basics = ({ formData, updateField, carMakes, loadingMakes, handleMake
   );
 };
 
-const Step2Photos = ({}: Step2PhotosProps) => {
+const Step2Photos = ({ formData, updateField }: Step2PhotosProps) => {
   const { t } = useLanguage();
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [dragActive, setDragActive] = React.useState(false);
+  const [previewUrls, setPreviewUrls] = React.useState<string[]>([]);
+
+  // Clean up object URLs when component unmounts or photos change
+  React.useEffect(() => {
+    // Create preview URLs for all photos
+    const urls = formData.photos.map(file => URL.createObjectURL(file));
+    setPreviewUrls(urls);
+
+    // Cleanup function
+    return () => {
+      urls.forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [formData.photos]);
+
+  const handleFileSelect = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    
+    const newFiles = Array.from(files);
+    const imageFiles = newFiles.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length !== newFiles.length) {
+      alert(t('vendor.onlyImageFilesAllowed') || 'Only image files are allowed.');
+    }
+    
+    if (imageFiles.length > 0) {
+      updateField('photos', [...formData.photos, ...imageFiles]);
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileSelect(e.target.files);
+    // Reset input to allow selecting the same file again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    handleFileSelect(e.dataTransfer.files);
+  };
+
+  const removePhoto = (index: number) => {
+    // Revoke the object URL for the removed photo
+    if (previewUrls[index]) {
+      URL.revokeObjectURL(previewUrls[index]);
+    }
+    
+    const newPhotos = formData.photos.filter((_, i) => i !== index);
+    updateField('photos', newPhotos);
+    // Adjust cover photo index if needed
+    if (formData.coverPhotoIndex >= newPhotos.length) {
+      updateField('coverPhotoIndex', Math.max(0, newPhotos.length - 1));
+    }
+  };
+
+  const setCoverPhoto = (index: number) => {
+    updateField('coverPhotoIndex', index);
+  };
+
   return (
   <Card className="max-w-4xl mx-auto">
     <CardHeader>
@@ -389,26 +464,104 @@ const Step2Photos = ({}: Step2PhotosProps) => {
         </AlertDescription>
       </Alert>
       
-      <div className="border-2 border-dashed border-border rounded-lg p-12 text-center hover:border-primary/50 transition-smooth">
+      <div
+        className={cn(
+          "border-2 border-dashed rounded-lg p-12 text-center transition-smooth cursor-pointer",
+          dragActive ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+        )}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFileInputChange}
+          className="hidden"
+        />
         <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
         <h3 className="font-medium mb-2">{t('vendor.dragDropPhotos')}</h3>
         <p className="text-sm text-muted-foreground mb-4">
           {t('vendor.clickToBrowse')}
         </p>
-        <Button variant="outline" type="button">{t('vendor.browseFiles')}</Button>
+        <Button variant="outline" type="button" onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}>
+          {t('vendor.browseFiles')}
+        </Button>
       </div>
 
-      {/* Photo grid placeholder */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[1, 2, 3, 4].map((index) => (
-          <div key={index} className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/20">
-            <div className="text-center">
-              <Image className="h-8 w-8 mx-auto text-muted-foreground mb-2" aria-label={`Photo placeholder ${index}`} />
-              <p className="text-xs text-muted-foreground">Photo {index}</p>
-            </div>
+      {/* Photo grid */}
+      {formData.photos.length > 0 && (
+        <div className="space-y-4">
+          <h4 className="font-medium">{t('vendor.uploadedPhotos')} ({formData.photos.length})</h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {formData.photos.map((file, index) => {
+              const previewUrl = previewUrls[index];
+              const isCoverPhoto = index === formData.coverPhotoIndex;
+              
+              return (
+                <div key={index} className="relative aspect-square group">
+                  {previewUrl && (
+                    <img
+                      src={previewUrl}
+                      alt={`Photo ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg border-2"
+                      style={{ borderColor: isCoverPhoto ? 'var(--primary)' : 'transparent' }}
+                    />
+                  )}
+                  {isCoverPhoto && (
+                    <div className="absolute top-2 left-2">
+                      <Badge variant="default" className="bg-primary text-primary-foreground text-xs">
+                        {t('vendor.coverPhoto') || 'Cover Photo'}
+                      </Badge>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-smooth rounded-lg flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                    {!isCoverPhoto && (
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCoverPhoto(index);
+                        }}
+                      >
+                        {t('vendor.setAsCover') || 'Set as Cover'}
+                      </Button>
+                    )}
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removePhoto(index);
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {formData.photos.length === 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((index) => (
+            <div key={index} className="aspect-square border-2 border-dashed border-border rounded-lg flex items-center justify-center bg-muted/20">
+              <div className="text-center">
+                <Image className="h-8 w-8 mx-auto text-muted-foreground mb-2" aria-label={`Photo placeholder ${index}`} />
+                <p className="text-xs text-muted-foreground">Photo {index}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-3">
         <h4 className="font-medium">{t('vendor.photoTips')}</h4>
@@ -1043,8 +1196,9 @@ export const AddCarWizard = () => {
     try {
       setIsPublishing(true);
       
-      // Import the API function
+      // Import the API functions
       const { createCar } = await import('@/lib/api/cars');
+      const { uploadImages } = await import('@/lib/api/images');
       
       // Validate required fields
       if (!formData.makeId) {
@@ -1083,8 +1237,20 @@ export const AddCarWizard = () => {
         vin: formData.vin || '',
       };
 
-      // Call the API
-      await createCar(carData);
+      // Step 1: Create the car
+      const createdCar = await createCar(carData);
+      
+      // Step 2: Upload images if any were selected
+      if (formData.photos.length > 0) {
+        try {
+          await uploadImages('Car', createdCar.id, formData.photos);
+        } catch (imageError) {
+          console.error('Error uploading images:', imageError);
+          // Don't fail the entire operation if image upload fails
+          // The car is already created, images can be added later
+          alert(t('vendor.carCreatedButImageUploadFailed') || 'Car created successfully, but image upload failed. You can add images later.');
+        }
+      }
       
       // Success - redirect to cars list
       // toast({
