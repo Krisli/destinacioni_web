@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { Search, Calendar, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/shared/components/LanguageProvider';
 import { useFilters } from '@/contexts/EnhancedFilterContext';
 import { DateRangeModal } from './DateRangeModal';
+import { SearchableLocationSelect } from './SearchableLocationSelect';
 import { cn } from '@/lib/utils';
 
 // Available locations
@@ -58,23 +58,6 @@ export const SearchStrip = () => {
   const dateDisplayText = getDateDisplayText();
   const daysText = days > 0 ? `${days} ${days === 1 ? t('day') : t('days')}` : '';
 
-  // Get location label
-  const getLocationLabel = (value: string) => {
-    const location = locations.find(loc => loc.value === value);
-    if (!location) return '';
-    return language === 'al' ? location.labelAL : location.label;
-  };
-
-  const pickupLocationLabel = filters.pickupLocation 
-    ? getLocationLabel(filters.pickupLocation) 
-    : t('pickup') || 'Pick-up';
-  
-  const dropoffLocationLabel = filters.dropoffLocation === 'same'
-    ? (t('samePlace') || 'Same place')
-    : filters.dropoffLocation
-    ? getLocationLabel(filters.dropoffLocation)
-    : (t('dropoff') || 'Drop-off');
-
   // Handle dropoff location change
   const handleDropoffChange = (value: string) => {
     dispatch({ type: 'SET_DROPOFF_LOCATION', payload: value });
@@ -101,23 +84,14 @@ export const SearchStrip = () => {
                 <label className="text-xs text-muted-foreground mb-1 block">
                   {t('pickup') || 'Pick-up'}
                 </label>
-                <Select 
-                  value={filters.pickupLocation || ''} 
+                <SearchableLocationSelect
+                  locations={locations}
+                  value={filters.pickupLocation || ''}
                   onValueChange={handlePickupChange}
-                >
-                  <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 shadow-none w-full">
-                    <SelectValue placeholder={t('pickup') || 'Pick-up'}>
-                      {pickupLocationLabel}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locations.map((location) => (
-                      <SelectItem key={location.value} value={location.value}>
-                        {language === 'al' ? location.labelAL : location.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={t('pickup') || 'Pick-up'}
+                  language={language}
+                  includeSamePlace={false}
+                />
               </div>
             </div>
 
@@ -130,26 +104,15 @@ export const SearchStrip = () => {
                 <label className="text-xs text-muted-foreground mb-1 block">
                   {t('dropoff') || 'Drop-off'}
                 </label>
-                <Select 
-                  value={filters.dropoffLocation || 'same'} 
+                <SearchableLocationSelect
+                  locations={locations}
+                  value={filters.dropoffLocation || 'same'}
                   onValueChange={handleDropoffChange}
-                >
-                  <SelectTrigger className="border-0 p-0 h-auto focus:ring-0 shadow-none w-full">
-                    <SelectValue>
-                      {dropoffLocationLabel}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="same">
-                      {t('samePlace') || 'Same place'}
-                    </SelectItem>
-                    {locations.map((location) => (
-                      <SelectItem key={location.value} value={location.value}>
-                        {language === 'al' ? location.labelAL : location.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  placeholder={t('dropoff') || 'Drop-off'}
+                  language={language}
+                  includeSamePlace={true}
+                  samePlaceLabel={t('samePlace') || 'Same place'}
+                />
               </div>
             </div>
 
@@ -186,7 +149,7 @@ export const SearchStrip = () => {
             </div>
 
             {/* Search Button */}
-            <div className="lg:ml-4 mt-2 lg:mt-0">
+            <div className="lg:ml-4 mt-2 lg:mt-2">
               <Button 
                 className="bg-white hover:bg-white/90 text-primary w-full lg:w-auto h-12 px-8 font-semibold"
                 onClick={() => {

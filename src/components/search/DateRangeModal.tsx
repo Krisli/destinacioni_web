@@ -67,10 +67,26 @@ export const DateRangeModal = ({ isOpen, onClose, onApply }: DateRangeModalProps
   ];
 
   // Calculate days difference
+  // Simple logic: calendar days + 1 if dropoff time > pickup time
   const calculateDays = () => {
     if (!ranges[0].startDate || !ranges[0].endDate) return 0;
-    const diffTime = Math.abs(ranges[0].endDate.getTime() - ranges[0].startDate.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    const start = new Date(ranges[0].startDate);
+    const end = new Date(ranges[0].endDate);
+    
+    // Calculate calendar days difference
+    const startDateOnly = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    const endDateOnly = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+    const calendarDays = Math.ceil((endDateOnly.getTime() - startDateOnly.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // If dropoff time > pickup time, add 1 day
+    const pickupHour = pickupTime !== 'any' ? parseInt(pickupTime.split(':')[0], 10) : 0;
+    const dropoffHour = dropoffTime !== 'any' ? parseInt(dropoffTime.split(':')[0], 10) : 0;
+    
+    const totalDays = calendarDays + (dropoffHour > pickupHour ? 1 : 0);
+    
+    // Ensure minimum of 1 day
+    return Math.max(1, totalDays);
   };
 
   const days = calculateDays();
@@ -108,23 +124,44 @@ export const DateRangeModal = ({ isOpen, onClose, onApply }: DateRangeModalProps
     }
   };
 
-  // Close on outside click
+  // Close on outside click (but not when clicking on Select dropdowns)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      const target = event.target as Element;
+      
+      // Check if click is on Select dropdown content (which renders in a portal)
+      // Radix Select Content is rendered in a portal outside the modal
+      const isSelectContent = target.closest('[data-radix-select-content]') || 
+                             target.closest('[data-radix-popper-content-wrapper]') ||
+                             target.closest('[role="listbox"]') ||
+                             target.closest('[data-radix-portal]') ||
+                             // Also check for Radix Select viewport and items
+                             target.closest('[data-radix-select-viewport]') ||
+                             target.closest('[data-radix-select-item]');
+      
+      if (isSelectContent) {
+        return; // Don't close if clicking on Select dropdown
+      }
+      
+      // Check if click is outside modal
+      if (modalRef.current && !modalRef.current.contains(target as Node)) {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
       document.body.style.overflow = 'hidden';
-    }
+      // Add event listener with a small delay to avoid immediate closing when Select opens
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside, true);
+      }, 100);
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'unset';
-    };
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener('mousedown', handleClickOutside, true);
+        document.body.style.overflow = 'unset';
+      };
+    }
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
