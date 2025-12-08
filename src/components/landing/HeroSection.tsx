@@ -64,7 +64,7 @@ export const HeroSection = () => {
           </div>
 
           {/* Two Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-8xl mx-auto">
             {/* Car Rental Card */}
             <div 
               className="bg-white rounded-2xl shadow-deep overflow-hidden cursor-pointer hover:shadow-primary transition-smooth group"
